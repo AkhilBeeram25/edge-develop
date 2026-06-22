@@ -2,7 +2,7 @@
 
 ## Timestamp
 
-- 2026-06-22T20:32:22+00:00
+- 2026-06-22T20:33:15+00:00
 
 ## What Was Completed
 
@@ -33,4 +33,4 @@
 
 ## Exact Next Step
 
-- Create a Git checkpoint commit for the Phase 1 implementation scaffold and memory updates.
+- After restart, run `git status`, confirm the latest checkpoint includes the Phase 1 scaffold, then install PyTorch or move to the training-loop implementation that connects size-aware assignment to `TinyDetectionLoss`.
