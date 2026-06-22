@@ -35,6 +35,8 @@ Run this check from the repository root:
 - NWD and area-weighted tiny-box losses reduce IoU brittleness for 2 to 5 pixel targets.
 - Subpixel offsets, mask coefficients, and region embeddings are included for unified multi-task extension.
 
+For the detailed equations and benefits, see `CHANGES_BENEFITS_AND_MICRO_OBJECT_MATH.md`.
+
 ## Constraint Check
 
 The current training loop is a functional first training path. It is not yet a full Ultralytics-equivalent production trainer. Missing production features include mosaic/mixup augmentation, EMA, distributed training, model export validation, TensorRT benchmarking, and COCO-style mAP. The directory contains the files required to start training a new model with the modified architecture and to extend it cleanly.

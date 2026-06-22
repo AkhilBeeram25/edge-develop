@@ -78,3 +78,4 @@ Then edit `configs/data/dataset.example.yaml` and run:
 ## Validate Architecture
 
 See `docs/YOLO_ARCHITECTURE_VALIDATION.md` for the YOLO-lineage audit and the exact modifications.
+See `docs/CHANGES_BENEFITS_AND_MICRO_OBJECT_MATH.md` for the detailed change log, benefits, major YOLO differences, and equations used for 2x2-pixel object handling.

@@ -2,7 +2,7 @@
 
 ## Timestamp
 
-- 2026-06-22T22:00:41+00:00
+- 2026-06-22T22:07:42+00:00
 
 ## What Was Completed
 
@@ -22,6 +22,12 @@
 - Added synthetic micro-object dataset, trainable prediction-cell assignment, `YOLOUpdateDetectionCriterion`, and `YOLOUpdateTrainer`.
 - Added architecture validation and smoke training scripts.
 - Installed Pillow and PyYAML into `.venv` for training-directory validation.
+- Added `YOLO_UPDATE/docs/CHANGES_BENEFITS_AND_MICRO_OBJECT_MATH.md`, covering:
+  - what changed,
+  - why the changes help,
+  - major modifications from YOLO,
+  - the equations used for 2x2-pixel object evidence preservation and tiny-box training.
+- Linked the new document from `YOLO_UPDATE/README.md` and `YOLO_UPDATE/docs/YOLO_ARCHITECTURE_VALIDATION.md`.
 
 ## Current State
 
@@ -35,6 +41,7 @@
 - `scripts/smoke_torch_pipeline.py` passes for Micro-S, Micro-B, and optional P1 detector smoke cases.
 - `.venv/bin/python YOLO_UPDATE/scripts/validate_architecture.py` passes.
 - `.venv/bin/python -m pytest -q YOLO_UPDATE/tests` passes with 3 tests.
+- New YOLO UPDATE docs are ASCII-clean.
 - `.venv/bin/python YOLO_UPDATE/scripts/smoke_pipeline.py --variant micro_s --image-size 64 --num-classes 3` passes.
 - `.venv/bin/python YOLO_UPDATE/scripts/smoke_train.py --variant micro_s --image-size 64 --steps 2 --save-dir /tmp/yolo_update_final_smoke` passes.
 - Local torch is `2.12.1+cu130`; CUDA is not available on this host, so validation was CPU-only.
