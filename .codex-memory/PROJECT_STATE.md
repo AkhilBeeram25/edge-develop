@@ -21,3 +21,7 @@
 - Cron autosave configured to run once per minute for `/home/open/ak`.
 - Manual shell helper `savecodex` configured in `/home/open/.bashrc` when that file exists.
 - First durable checkpoint commit created.
+
+## Current Project Artifacts
+
+- `docs/YOLO_TECHNICAL_ROADMAP.md` contains the comprehensive technical roadmap for the proprietary YOLO-codenamed unified vision model, including micro-object architecture, multi-task heads, zero/few-shot strategy, edge inference, phased implementation, risks, and acceptance metrics.

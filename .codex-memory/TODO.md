@@ -4,6 +4,7 @@
 
 - Use small Git commits as durable checkpoints after meaningful changes.
 - After restart, confirm the latest commit includes any work completed before shutdown.
+- Optional next step: scaffold implementation modules from `docs/YOLO_TECHNICAL_ROADMAP.md` if requested.
 
 ## Next Steps After Restart
 
