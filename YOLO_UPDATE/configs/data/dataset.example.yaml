@@ -1,0 +1,12 @@
+# Edit these paths for a real dataset.
+path: /absolute/path/to/dataset
+train: images/train
+val: images/val
+train_labels: labels/train
+val_labels: labels/val
+nc: 3
+names:
+  - class_0
+  - class_1
+  - class_2
+
