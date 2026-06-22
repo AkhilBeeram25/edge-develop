@@ -33,6 +33,12 @@
 - `configs/yolo_micro_b.yaml` is the baseline Micro-B configuration.
 - `tests/` contains standard-library unit tests for dependency-light utilities.
 - `scripts/smoke_torch_pipeline.py` runs a PyTorch smoke pipeline covering model forward, decode, tiny detection loss, multi-task loss combination, and backward pass.
+- `YOLO_UPDATE/` is the self-contained trainable model directory for the modified YOLO-family architecture. It includes:
+  - `yolo_update/` package with backbone, neck, heads, losses, inference, dataset loading, training criterion, and trainer.
+  - `configs/models/`, `configs/data/`, and `configs/train/` YAML files.
+  - `scripts/train.py`, `scripts/validate.py`, `scripts/smoke_pipeline.py`, `scripts/smoke_train.py`, and `scripts/validate_architecture.py`.
+  - `docs/YOLO_ARCHITECTURE_VALIDATION.md` documenting why the model is a YOLO-family modification rather than a random architecture.
+  - `tests/` for architecture and synthetic training validation.
 
 ## Local Python Environment
 
@@ -48,4 +54,8 @@
 - `.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_s --image-size 64 --num-classes 3` passes.
 - `.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_b --image-size 128 --num-classes 5` passes.
 - `.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_s --image-size 64 --num-classes 3 --p1-detector` passes.
+- `.venv/bin/python YOLO_UPDATE/scripts/validate_architecture.py` passes and reports that YOLO UPDATE is a YOLO-family architecture with targeted micro-object modifications.
+- `.venv/bin/python -m pytest -q YOLO_UPDATE/tests` passes: 3 tests.
+- `.venv/bin/python YOLO_UPDATE/scripts/smoke_pipeline.py --variant micro_s --image-size 64 --num-classes 3` passes.
+- `.venv/bin/python YOLO_UPDATE/scripts/smoke_train.py --variant micro_s --image-size 64 --steps 2 --save-dir /tmp/yolo_update_final_smoke` passes and writes a checkpoint under `/tmp`.
 - ONNX export, TensorRT build, QAT conversion, and real native-tile hardware benchmarking have not been run yet.

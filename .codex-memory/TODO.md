@@ -4,8 +4,9 @@
 
 - Use small Git commits as durable checkpoints after meaningful changes.
 - After restart, confirm the latest commit includes any work completed before shutdown.
+- Replace `YOLO_UPDATE/configs/data/dataset.example.yaml` with the real dataset paths and class names before real training.
 - Run a larger native-tile smoke benchmark once hardware memory/thermal limits are acceptable.
-- Implement the full training loop that connects size-aware assignment to `TinyDetectionLoss`.
+- Extend the `YOLO_UPDATE` trainer with production features: mAP validation, augmentation, EMA, checkpoint resume, and distributed training.
 - Add decoder-to-candidate thresholding and hardware benchmark scripts once PyTorch/TensorRT are available.
 - Test ONNX export and TensorRT build on an edge device with the actual accelerator stack.
 

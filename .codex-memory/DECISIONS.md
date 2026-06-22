@@ -30,3 +30,10 @@
 - Default YOLO-Micro detection levels are P2-P5. P1 remains a detail/refinement path by default.
 - A full P1 detection head is supported only via `include_p1_head=True` / `--p1-detector` accuracy mode because runtime validation showed the high-resolution head is costly on CPU and the roadmap recommends P2 as the primary micro-object detection level.
 - Include NumPy in the `torch` extra because PyTorch emits runtime warnings and some tensor interop paths are degraded without it.
+
+## YOLO UPDATE Standalone Directory
+
+- Treat `YOLO_UPDATE/` as the standalone trainable directory for the modified YOLO-family model, similar in spirit to a YOLO project directory with configs, package code, scripts, docs, and tests in one place.
+- Do not describe YOLO UPDATE as a random architecture. The validation verdict is that it preserves YOLO-family backbone/neck/head structure and adds targeted micro-object modifications.
+- Use `YOLO_UPDATE/scripts/validate_architecture.py` as the reproducible architecture-lineage check.
+- Use `YOLO_UPDATE/scripts/smoke_train.py` as the minimal trainability check until a real dataset is wired in.
