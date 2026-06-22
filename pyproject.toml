@@ -13,7 +13,7 @@ authors = [{ name = "AK Vision Engineering" }]
 dependencies = []
 
 [project.optional-dependencies]
-torch = ["torch>=2.2"]
+torch = ["numpy>=1.26", "torch>=2.2"]
 dev = ["pytest>=8.0"]
 
 [tool.setuptools.packages.find]
@@ -22,4 +22,3 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-

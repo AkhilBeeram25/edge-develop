@@ -29,7 +29,7 @@ class YOLOMicroConfig:
     reg_max: int = 16
     width_mult: float = 0.75
     depth_mult: float = 0.75
-    include_p1_head: bool = True
+    include_p1_head: bool = False
 
     @classmethod
     def micro_s(cls, num_classes: int) -> "YOLOMicroConfig":
@@ -93,4 +93,3 @@ class YOLOMicroModel(nn.Module):
             out["backbone_features"] = backbone_features
             out["pyramid_features"] = pyramid
         return out
-

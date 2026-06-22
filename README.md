@@ -19,14 +19,17 @@ The package metadata keeps PyTorch optional so standard-library utilities and te
 python3 -m pip install -e ".[torch,dev]"
 ```
 
-On this workspace, PyTorch is not installed by default, so local validation is limited to syntax and standard-library tests unless dependencies are added.
+On ARM64, PyPI currently resolves a GPU-capable PyTorch distribution with large CUDA runtime packages. Use a workspace-local virtual environment and expect several gigabytes of disk use.
 
 ## Smoke Checks
 
 ```bash
 PYTHONPATH=src python3 -m unittest discover -s tests
 python3 -m py_compile $(find src tests -name "*.py")
+.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_s --image-size 64 --num-classes 3
 ```
+
+The default Micro-B architecture uses P1 as a detail/refinement path and detects on P2-P5. Enable a P1 detection head only for accuracy-mode experiments where the hardware budget can absorb the high-resolution head cost.
 
 ## Phase 1 Build Target
 
@@ -37,4 +40,3 @@ The immediate engineering target is a working YOLO-Micro-B detector at native ti
 3. Run a forward-pass smoke test with `YOLOMicroModel`.
 4. Wire the assignment/loss path into the training loop.
 5. Benchmark FP16 export on the edge target.
-

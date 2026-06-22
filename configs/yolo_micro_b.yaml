@@ -8,6 +8,8 @@ model:
   width_mult: 0.75
   depth_mult: 0.75
   pyramid_levels: [p1, p2, p3, p4, p5]
+  detection_levels: [p2, p3, p4, p5]
+  p1_detector: false
 
 inference:
   tile_size: 1536
@@ -33,4 +35,3 @@ deployment:
     - p2_fusion
     - box_distribution_head
     - subpixel_head
-
