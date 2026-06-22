@@ -1,0 +1,36 @@
+model:
+  variant: micro_b
+  input_channels: 3
+  num_classes: 80
+  embedding_dim: 256
+  mask_dim: 32
+  reg_max: 16
+  width_mult: 0.75
+  depth_mult: 0.75
+  pyramid_levels: [p1, p2, p3, p4, p5]
+
+inference:
+  tile_size: 1536
+  tile_overlap: 128
+  score_threshold: 0.05
+  merge_iou_threshold: 0.55
+  preserve_low_confidence_micro_candidates: true
+
+training:
+  detection_weight: 1.0
+  segmentation_weight: 0.75
+  image_classification_weight: 0.25
+  embedding_weight: 0.20
+  distillation_weight: 0.30
+  micro_object_area_threshold: 25.0
+  max_small_object_weight: 6.0
+
+deployment:
+  preferred_precision: mixed_fp16_int8
+  protect_precision:
+    - stem
+    - p1_fusion
+    - p2_fusion
+    - box_distribution_head
+    - subpixel_head
+
