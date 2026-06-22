@@ -2,7 +2,7 @@
 
 ## Timestamp
 
-- 2026-06-22T22:25:31+00:00
+- 2026-06-22T22:29:42+00:00
 
 ## What Was Completed
 
@@ -29,7 +29,8 @@
   - the equations used for 2x2-pixel object evidence preservation and tiny-box training.
 - Linked the new document from `YOLO_UPDATE/README.md` and `YOLO_UPDATE/docs/YOLO_ARCHITECTURE_VALIDATION.md`.
 - Found that GitHub has both `main` and `master`; the work was visible on `master`, while GitHub default view likely showed `main`.
-- Began a non-destructive merge of `master` into `main` so the YOLO UPDATE changes appear on the default branch.
+- Completed a non-destructive merge of `master` into `main` so the YOLO UPDATE changes appear on the default branch.
+- Pushed `main` to GitHub at merge commit `960ec85`.
 
 ## Current State
 
@@ -47,8 +48,9 @@
 - `.venv/bin/python YOLO_UPDATE/scripts/smoke_pipeline.py --variant micro_s --image-size 64 --num-classes 3` passes.
 - `.venv/bin/python YOLO_UPDATE/scripts/smoke_train.py --variant micro_s --image-size 64 --steps 2 --save-dir /tmp/yolo_update_final_smoke` passes.
 - Local torch is `2.12.1+cu130`; CUDA is not available on this host, so validation was CPU-only.
+- GitHub `main` now contains `YOLO_UPDATE/`; `master` also still exists.
 - No secrets or credentials were added.
 
 ## Exact Next Step
 
-- Complete and push the `main` branch merge to GitHub, then confirm `main` contains `YOLO_UPDATE/`.
+- Tomorrow, start from branch `main`, run `git status`, and continue by wiring `YOLO_UPDATE/configs/data/dataset.example.yaml` to a real dataset or adding production trainer features such as mAP, augmentation, EMA, resume, and export validation.
