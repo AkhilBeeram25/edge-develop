@@ -1,0 +1,12 @@
+model_name: YOLO_UPDATE_micro_l
+variant: micro_l
+num_classes: 80
+input_channels: 3
+embedding_dim: 256
+mask_dim: 32
+reg_max: 16
+width_mult: 1.00
+depth_mult: 1.00
+include_p1_head: false
+detection_levels: [p2, p3, p4, p5]
+

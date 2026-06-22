@@ -1,0 +1,12 @@
+epochs: 10
+batch_size: 2
+image_size: 256
+learning_rate: 0.0005
+weight_decay: 0.0005
+num_workers: 0
+device: cpu
+save_dir: runs/train/yolo_update
+log_interval: 10
+negative_quality_weight: 0.25
+max_grad_norm: 10.0
+
