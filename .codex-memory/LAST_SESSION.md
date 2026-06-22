@@ -2,7 +2,7 @@
 
 ## Timestamp
 
-- 2026-06-22T18:40:32+00:00
+- 2026-06-22T18:42:04+00:00
 
 ## What Was Set Up
 
@@ -13,6 +13,7 @@
 - Made the checkpoint script executable.
 - Installed cron entry: `* * * * * /home/open/.local/bin/codex-checkpoint /home/open/ak`.
 - Added `savecodex` alias to `/home/open/.bashrc` when the file existed and the alias was missing.
+- Created initial checkpoint commit `chore: initialize codex persistent memory and autosave`.
 
 ## Current State
 
@@ -22,8 +23,8 @@
 - Autosave script is executable.
 - Cron autosave is present.
 - Manual save helper has been configured when applicable.
-- Initial checkpoint commit is the remaining setup step.
+- Initial checkpoint commit exists.
 
 ## Exact Next Step
 
-- Run `git status`, then create commit `chore: initialize codex persistent memory and autosave`.
+- After restart, run `git status`, read this file, and continue with the next pending task in `.codex-memory/TODO.md`.

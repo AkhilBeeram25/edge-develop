@@ -20,4 +20,4 @@
 - Autosave checkpoint script installed at `/home/open/.local/bin/codex-checkpoint`.
 - Cron autosave configured to run once per minute for `/home/open/ak`.
 - Manual shell helper `savecodex` configured in `/home/open/.bashrc` when that file exists.
-- First durable checkpoint commit is ready to create.
+- First durable checkpoint commit created.
