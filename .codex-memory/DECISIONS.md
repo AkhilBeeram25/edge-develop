@@ -24,3 +24,9 @@
 - Keep native tiling, augmentation guards, few-shot sampling, metrics, assignment level selection, and weighted box fusion dependency-light so they can run on edge and data-QA machines without PyTorch.
 - Keep assignment separate from `TinyDetectionLoss`; the trainer should pass matched positive tensors after size-aware dynamic assignment.
 - Export should wrap the model into a flat tuple of tensors for ONNX instead of relying on nested dictionaries.
+
+## Runtime Architecture Adjustment
+
+- Default YOLO-Micro detection levels are P2-P5. P1 remains a detail/refinement path by default.
+- A full P1 detection head is supported only via `include_p1_head=True` / `--p1-detector` accuracy mode because runtime validation showed the high-resolution head is costly on CPU and the roadmap recommends P2 as the primary micro-object detection level.
+- Include NumPy in the `torch` extra because PyTorch emits runtime warnings and some tensor interop paths are degraded without it.

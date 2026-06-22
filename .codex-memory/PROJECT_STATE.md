@@ -32,9 +32,20 @@
   - ONNX, TensorRT command, and QAT deployment entry points.
 - `configs/yolo_micro_b.yaml` is the baseline Micro-B configuration.
 - `tests/` contains standard-library unit tests for dependency-light utilities.
+- `scripts/smoke_torch_pipeline.py` runs a PyTorch smoke pipeline covering model forward, decode, tiny detection loss, multi-task loss combination, and backward pass.
+
+## Local Python Environment
+
+- `.venv/` was created with `virtualenv` because system `python3 -m venv` is unavailable without the missing Debian `python3.11-venv` package.
+- Installed local validation dependencies in `.venv`: `torch==2.12.1`, `pytest==9.1.1`, and `numpy==2.4.6`.
+- PyPI resolved a GPU-capable ARM64 PyTorch build (`torch==2.12.1+cu130`) with CUDA runtime packages; CUDA is not available on this host (`torch.cuda.is_available() == False`).
+- `.venv/` is ignored and is not committed.
 
 ## Validation Status
 
-- `python3 -m compileall -q src tests` passes.
-- `PYTHONPATH=src python3 -m unittest discover -s tests` passes: 8 tests.
-- PyTorch is not installed in this workspace, so model forward-pass, training-loss tensor execution, ONNX export, and QAT conversion have not been run locally.
+- `.venv/bin/python -m compileall -q src tests scripts` passes.
+- `.venv/bin/python -m pytest -q` passes: 11 tests.
+- `.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_s --image-size 64 --num-classes 3` passes.
+- `.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_b --image-size 128 --num-classes 5` passes.
+- `.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_s --image-size 64 --num-classes 3 --p1-detector` passes.
+- ONNX export, TensorRT build, QAT conversion, and real native-tile hardware benchmarking have not been run yet.

@@ -4,9 +4,10 @@
 
 - Use small Git commits as durable checkpoints after meaningful changes.
 - After restart, confirm the latest commit includes any work completed before shutdown.
-- Install PyTorch on a training or edge-validation machine and run a YOLO-Micro-B forward-pass smoke test.
+- Run a larger native-tile smoke benchmark once hardware memory/thermal limits are acceptable.
 - Implement the full training loop that connects size-aware assignment to `TinyDetectionLoss`.
 - Add decoder-to-candidate thresholding and hardware benchmark scripts once PyTorch/TensorRT are available.
+- Test ONNX export and TensorRT build on an edge device with the actual accelerator stack.
 
 ## Next Steps After Restart
 
@@ -17,4 +18,4 @@
 
 ## Unresolved Questions
 
-- Target class taxonomy, sensor resolution, edge hardware, and dataset schema are not yet specified.
+- Target class taxonomy, sensor resolution, edge hardware, dataset schema, and latency budget are not yet specified.
