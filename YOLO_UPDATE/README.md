@@ -75,6 +75,28 @@ Then edit `configs/data/dataset.example.yaml` and run:
   --train YOLO_UPDATE/configs/train/default.yaml
 ```
 
+Training writes `last.pt` and `best.pt` under `save_dir`, stores EMA weights in each checkpoint, and reports validation loss plus decoded detection metrics such as `val/det/map`, precision, recall, and 2-to-5-pixel recall.
+
+Resume from a checkpoint with:
+
+```bash
+.venv/bin/python YOLO_UPDATE/scripts/train.py \
+  --data YOLO_UPDATE/configs/data/dataset.example.yaml \
+  --model YOLO_UPDATE/configs/models/yolo_update_micro_s.yaml \
+  --train YOLO_UPDATE/configs/train/default.yaml \
+  --resume runs/train/yolo_update/last.pt
+```
+
+Validate a checkpoint with:
+
+```bash
+.venv/bin/python YOLO_UPDATE/scripts/validate.py \
+  --data YOLO_UPDATE/configs/data/dataset.example.yaml \
+  --model YOLO_UPDATE/configs/models/yolo_update_micro_s.yaml \
+  --train YOLO_UPDATE/configs/train/default.yaml \
+  --checkpoint runs/train/yolo_update/best.pt
+```
+
 ## Validate Architecture
 
 See `docs/YOLO_ARCHITECTURE_VALIDATION.md` for the YOLO-lineage audit and the exact modifications.
