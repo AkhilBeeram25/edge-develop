@@ -88,7 +88,6 @@ class YOLOFormatDetectionDataset(Dataset[tuple[Tensor, Tensor, dict[str, Any]]])
             original_width, original_height = image.size
             labels = _read_yolo_labels(self._label_path_for(image_path), original_width, original_height)
             image = image.resize((self.image_size, self.image_size), Image.Resampling.BILINEAR)
-            array = np.asarray(image, dtype=np.float32) / 255.0
         scale_x = self.image_size / float(original_width)
         scale_y = self.image_size / float(original_height)
         if labels.numel():
@@ -105,10 +104,8 @@ class YOLOFormatDetectionDataset(Dataset[tuple[Tensor, Tensor, dict[str, Any]]])
                     old_x1 = labels[:, 3].clone()
                     labels[:, 1] = float(self.image_size) - old_x1
                     labels[:, 3] = float(self.image_size) - old_x0
+        array = np.asarray(image, dtype=np.float32) / 255.0
         tensor = torch.from_numpy(array).permute(2, 0, 1).contiguous()
-        if flipped:
-            array = np.asarray(image, dtype=np.float32) / 255.0
-            tensor = torch.from_numpy(array).permute(2, 0, 1).contiguous()
         meta = {
             "image_path": str(image_path),
             "original_size": (original_width, original_height),
