@@ -9,4 +9,9 @@ save_dir: runs/train/yolo_update
 log_interval: 10
 negative_quality_weight: 0.25
 max_grad_norm: 10.0
-
+ema_decay: 0.999
+resume_checkpoint: ""
+horizontal_flip_prob: 0.5
+validation_score_threshold: 0.05
+validation_max_detections: 100
+validation_iou_threshold: 0.5

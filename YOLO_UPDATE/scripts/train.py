@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 from pathlib import Path
 import sys
 
@@ -23,12 +24,21 @@ def main() -> None:
     parser.add_argument("--train", required=True, type=Path)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--max-steps-per-epoch", type=int)
+    parser.add_argument("--resume", type=Path)
     args = parser.parse_args()
 
     set_seed(args.seed)
     train_config = TrainConfig.from_yaml(args.train)
+    if args.resume is not None:
+        train_config = replace(train_config, resume_checkpoint=str(args.resume))
     model_config = model_config_from_yaml(args.model)
-    train_dataset = YOLOFormatDetectionDataset(args.data, split="train", image_size=train_config.image_size)
+    train_dataset = YOLOFormatDetectionDataset(
+        args.data,
+        split="train",
+        image_size=train_config.image_size,
+        augment=train_config.horizontal_flip_prob > 0.0,
+        horizontal_flip_prob=train_config.horizontal_flip_prob,
+    )
     val_dataset = YOLOFormatDetectionDataset(args.data, split="val", image_size=train_config.image_size)
     trainer = YOLOUpdateTrainer(model_config, train_config, train_dataset, val_dataset)
     trainer.fit(max_steps_per_epoch=args.max_steps_per_epoch)
@@ -36,4 +46,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
