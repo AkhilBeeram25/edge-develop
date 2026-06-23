@@ -46,11 +46,20 @@
   - EMA model weights saved as `ema_model`,
   - decoded validation detection metrics including `val/det/map`, precision, recall, and 2-to-5-pixel recall,
   - optional horizontal flip augmentation for YOLO-format training labels.
+- `ULTRALYTICS_MICRO/` is a vendored clone of the official Ultralytics repository from `main` commit `974dda2`, modified for 2x2-pixel micro-object detection while preserving the standard Ultralytics training/inference API. It includes:
+  - `ultralytics/nn/modules/micro.py` with `SPDConv`, `MicroC2f`, `MicroSPPF`, `MicroFPNFusion`, and `MicroDetect`.
+  - parser integration in `ultralytics/nn/tasks.py` and module exports in `ultralytics/nn/modules/__init__.py`.
+  - tiny-aware assignment via `TinyObjectTaskAlignedAssigner` in `ultralytics/utils/tal.py`, activated only by `MicroDetect` through `ultralytics/utils/loss.py`.
+  - a 2px-safe transform guard in `ultralytics/data/augment.py` so exact 2x2 boxes are not filtered before loss assignment.
+  - model configs `ultralytics/cfg/models/26/yolo26-micro.yaml` and `ultralytics/cfg/models/v8/yolov8-micro.yaml`.
+  - synthetic 2x2 training demo `examples/micro_object_train_2px.py`.
+  - documentation `docs/micro_object_architecture.md`.
+  - focused tests in `tests/test_micro_architecture.py`.
 
 ## Local Python Environment
 
 - `.venv/` was created with `virtualenv` because system `python3 -m venv` is unavailable without the missing Debian `python3.11-venv` package.
-- Installed local validation dependencies in `.venv`: `torch==2.12.1`, `pytest==9.1.1`, and `numpy==2.4.6`.
+- Installed local validation dependencies in `.venv`: `torch==2.12.1`, `pytest==9.1.1`, `numpy==2.4.6`, Pillow, PyYAML, and Ultralytics runtime dependencies needed for local validation (`opencv-python-headless`, `matplotlib`, `requests`, `scipy`, `psutil`, `polars`, `ultralytics-thop`, and `torchvision`).
 - PyPI resolved a GPU-capable ARM64 PyTorch build (`torch==2.12.1+cu130`) with CUDA runtime packages; CUDA is not available on this host (`torch.cuda.is_available() == False`).
 - `.venv/` is ignored and is not committed.
 
@@ -66,4 +75,7 @@
 - Documentation sanity check for non-ASCII characters in the new YOLO UPDATE docs passes.
 - `.venv/bin/python YOLO_UPDATE/scripts/smoke_pipeline.py --variant micro_s --image-size 64 --num-classes 3` passes.
 - `.venv/bin/python YOLO_UPDATE/scripts/smoke_train.py --variant micro_s --image-size 64 --steps 2 --save-dir /tmp/yolo_update_resume_smoke` passes and writes checkpoints under `/tmp`.
+- `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python -m pytest -q ULTRALYTICS_MICRO/tests/test_micro_architecture.py` passes: 5 tests.
+- `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python ULTRALYTICS_MICRO/examples/micro_object_train_2px.py --model ULTRALYTICS_MICRO/ultralytics/cfg/models/26/yolo26-micro.yaml --image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2 --work-dir /tmp/ultralytics_micro_yolo26_2px_augfix` passes, keeps 2 instances per batch, produces nonzero box/class loss, saves `last.pt` and `best.pt`, and reports 0 mAP after one epoch.
+- `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python ULTRALYTICS_MICRO/examples/micro_object_train_2px.py --model ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml --image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2 --work-dir /tmp/ultralytics_micro_v8_2px_augfix` passes, keeps 2 instances per batch, produces nonzero box/class/DFL loss, saves `last.pt` and `best.pt`, and reports 0 mAP after one epoch.
 - ONNX export, TensorRT build, QAT conversion, and real native-tile hardware benchmarking have not been run yet.

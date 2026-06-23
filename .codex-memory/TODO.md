@@ -10,6 +10,9 @@
 - Extend the `YOLO_UPDATE` trainer with remaining production features: distributed training, LR scheduling, richer micro-object augmentations, structured metric logging, and export-time EMA selection.
 - Add decoder-to-candidate thresholding and hardware benchmark scripts once PyTorch/TensorRT are available.
 - Test ONNX export and TensorRT build on an edge device with the actual accelerator stack.
+- For `ULTRALYTICS_MICRO/`, run a real convergence experiment on a non-synthetic micro-object dataset and compare against upstream `yolo26-p2.yaml` / `yolov8-p2.yaml`.
+- For `ULTRALYTICS_MICRO/`, add size-sliced validation reporting for 2-to-5-pixel objects in the standard Ultralytics validator.
+- For `ULTRALYTICS_MICRO/`, benchmark P1-P5 latency and memory at target native sensor resolution before deployment.
 
 ## Next Steps After Restart
 

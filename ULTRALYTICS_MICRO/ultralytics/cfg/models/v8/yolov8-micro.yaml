@@ -1,0 +1,66 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+
+# YOLOv8-Micro object detection model with P1/2 - P5/32 outputs.
+# This keeps YOLOv8-style C2f blocks and DFL regression while adding micro-object preservation modules.
+
+nc: 80 # number of classes
+end2end: False
+reg_max: 16
+scales:
+  # [depth, width, max_channels]
+  n: [0.33, 0.25, 1024]
+  s: [0.33, 0.50, 1024]
+  m: [0.67, 0.75, 768]
+  l: [1.00, 1.00, 512]
+  x: [1.00, 1.25, 512]
+
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Conv, [64, 3, 1]] # 0-P0/1 native-detail stem
+  - [-1, 1, MicroC2f, [64, True, 0.5, [1, 2]]] # 1-P0/1 micro refinement
+  - [-1, 1, SPDConv, [64, 3, 2]] # 2-P1/2
+  - [-1, 3, MicroC2f, [64, True, 0.5, [1, 2, 3]]] # 3-P1/2
+  - [-1, 1, SPDConv, [128, 3, 2]] # 4-P2/4
+  - [-1, 3, C2f, [256, True]] # 5-P2/4
+  - [-1, 1, SPDConv, [256, 3, 2]] # 6-P3/8
+  - [-1, 6, C2f, [512, True]] # 7-P3/8
+  - [-1, 1, SPDConv, [512, 3, 2]] # 8-P4/16
+  - [-1, 6, C2f, [512, True]] # 9-P4/16
+  - [-1, 1, SPDConv, [1024, 3, 2]] # 10-P5/32
+  - [-1, 3, C2f, [1024, True]] # 11-P5/32
+  - [-1, 1, MicroSPPF, [1024, [1, 2, 3], True]] # 12 pooling-free context
+
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 9], 1, MicroFPNFusion, [512]] # 14 fuse P5->P4 with backbone P4
+  - [-1, 3, C2f, [512]] # 15-P4/16
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 7], 1, MicroFPNFusion, [256]] # 17 fuse P4->P3 with backbone P3
+  - [-1, 3, C2f, [256]] # 18-P3/8
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 5], 1, MicroFPNFusion, [128]] # 20 fuse P3->P2 with backbone P2
+  - [-1, 3, MicroC2f, [128, True, 0.5, [1, 2, 3]]] # 21-P2/4
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 3], 1, MicroFPNFusion, [128]] # 23 fuse P2->P1 with backbone P1
+  - [-1, 3, MicroC2f, [128, True, 0.5, [1, 2, 3]]] # 24-P1/2 ultra-small
+
+  - [-1, 1, SPDConv, [128, 3, 2]]
+  - [[-1, 21], 1, MicroFPNFusion, [128]] # 26-P2/4
+  - [-1, 3, C2f, [128]] # 27-P2/4
+
+  - [-1, 1, SPDConv, [256, 3, 2]]
+  - [[-1, 18], 1, MicroFPNFusion, [256]] # 29-P3/8
+  - [-1, 3, C2f, [256]] # 30-P3/8
+
+  - [-1, 1, SPDConv, [512, 3, 2]]
+  - [[-1, 15], 1, MicroFPNFusion, [512]] # 32-P4/16
+  - [-1, 3, C2f, [512]] # 33-P4/16
+
+  - [-1, 1, SPDConv, [1024, 3, 2]]
+  - [[-1, 12], 1, MicroFPNFusion, [1024]] # 35-P5/32
+  - [-1, 3, C2f, [1024]] # 36-P5/32
+
+  - [[24, 27, 30, 33, 36], 1, MicroDetect, [nc, 12.0]] # Detect(P1, P2, P3, P4, P5)
