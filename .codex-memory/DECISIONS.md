@@ -37,3 +37,10 @@
 - Do not describe YOLO UPDATE as a random architecture. The validation verdict is that it preserves YOLO-family backbone/neck/head structure and adds targeted micro-object modifications.
 - Use `YOLO_UPDATE/scripts/validate_architecture.py` as the reproducible architecture-lineage check.
 - Use `YOLO_UPDATE/scripts/smoke_train.py` as the minimal trainability check until a real dataset is wired in.
+
+## YOLO UPDATE Trainer Conventions
+
+- Save both `last.pt` and `best.pt` during training.
+- Keep EMA weights in checkpoint payloads as `ema_model` and use EMA for validation when enabled.
+- Treat decoded validation metrics (`det/map`, precision, recall, and 2-to-5-pixel recall) as the first trainer-level detection-quality signal beyond loss.
+- Keep augmentation conservative until real data is available; horizontal flip is enabled through `horizontal_flip_prob` and updates YOLO labels in pixel space.

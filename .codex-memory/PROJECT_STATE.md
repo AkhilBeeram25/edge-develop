@@ -40,6 +40,12 @@
   - `docs/YOLO_ARCHITECTURE_VALIDATION.md` documenting why the model is a YOLO-family modification rather than a random architecture.
   - `docs/CHANGES_BENEFITS_AND_MICRO_OBJECT_MATH.md` documenting what changed, why the changes help, major differences from YOLO, and the equations used for 2x2-pixel object handling.
   - `tests/` for architecture and synthetic training validation.
+- `YOLO_UPDATE` trainer now supports production-oriented basics:
+  - checkpoint resume through config or `scripts/train.py --resume`,
+  - `last.pt` and `best.pt` checkpoint writing,
+  - EMA model weights saved as `ema_model`,
+  - decoded validation detection metrics including `val/det/map`, precision, recall, and 2-to-5-pixel recall,
+  - optional horizontal flip augmentation for YOLO-format training labels.
 
 ## Local Python Environment
 
@@ -56,8 +62,8 @@
 - `.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_b --image-size 128 --num-classes 5` passes.
 - `.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_s --image-size 64 --num-classes 3 --p1-detector` passes.
 - `.venv/bin/python YOLO_UPDATE/scripts/validate_architecture.py` passes and reports that YOLO UPDATE is a YOLO-family architecture with targeted micro-object modifications.
-- `.venv/bin/python -m pytest -q YOLO_UPDATE/tests` passes: 3 tests.
+- `.venv/bin/python -m pytest -q YOLO_UPDATE/tests` passes: 4 tests.
 - Documentation sanity check for non-ASCII characters in the new YOLO UPDATE docs passes.
 - `.venv/bin/python YOLO_UPDATE/scripts/smoke_pipeline.py --variant micro_s --image-size 64 --num-classes 3` passes.
-- `.venv/bin/python YOLO_UPDATE/scripts/smoke_train.py --variant micro_s --image-size 64 --steps 2 --save-dir /tmp/yolo_update_final_smoke` passes and writes a checkpoint under `/tmp`.
+- `.venv/bin/python YOLO_UPDATE/scripts/smoke_train.py --variant micro_s --image-size 64 --steps 2 --save-dir /tmp/yolo_update_resume_smoke` passes and writes checkpoints under `/tmp`.
 - ONNX export, TensorRT build, QAT conversion, and real native-tile hardware benchmarking have not been run yet.
