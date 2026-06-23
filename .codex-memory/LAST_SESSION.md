@@ -2,7 +2,7 @@
 
 ## Timestamp
 
-- 2026-06-23T15:27:53+00:00
+- 2026-06-23T17:23:39+00:00
 
 ## What Was Completed
 
@@ -51,6 +51,21 @@
 - Updated `ULTRALYTICS_MICRO/.gitignore` so `ultralytics/assets/bus.jpg` and `ultralytics/assets/zidane.jpg` are tracked.
 - Updated `ULTRALYTICS_MICRO/ultralytics/utils/checks.py` so the AMP startup self-check skips instead of crashing on `FileNotFoundError`.
 - Added a Colab troubleshooting note for the missing `bus.jpg` AMP-check failure.
+- Pushed the Colab AMP asset fix to `origin/main`.
+- User reran Colab training and confirmed active training with:
+  - `model=/content/ak/ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml`,
+  - `pretrained=yolov8n.pt`,
+  - `data=/content/MPI-crack-1/data.yaml`,
+  - `epochs=150`,
+  - `imgsz=960`,
+  - `batch=4`,
+  - Tesla T4 GPU,
+  - `nc=3`.
+- Reviewed the Colab log and confirmed the run is using the modified micro architecture, because the model summary includes `MicroC2f`, `SPDConv`, `MicroFPNFusion`, `MicroSPPF`, and `MicroDetect`.
+- Confirmed `yolov8n.pt` is only a partial weight source, with log line `Transferred 28/821 items from pretrained weights`.
+- Colab AMP check passed after downloading `yolo26n.pt`.
+- Training started successfully and was observed at epoch `1/150`, around `109/809` batches, using about `9.45G` GPU memory.
+- Noted that the observed run used default augmentation values in the log (`mosaic=1.0`, `scale=0.5`, `close_mosaic=10`), despite earlier recommended conservative settings.
 
 ## Validation Run
 
@@ -74,26 +89,24 @@
   - produced nonzero box/class/DFL loss,
   - saved `last.pt` and `best.pt`,
   - reported 0 mAP after one epoch.
-- Pending validation for this Colab asset fix:
-  - compile changed Ultralytics files,
-  - run focused micro tests,
-  - confirm the assets are tracked by Git.
+- The Colab asset fix was validated locally with syntax compile and focused micro tests before push; Colab then passed the AMP check and reached active training.
 
 ## Current State
 
 - Workspace path is `/home/open/ak`.
 - Active branch is `main`.
 - The previous Ultralytics micro implementation and Colab quickstart are already committed and pushed.
-- This session adds the missing default assets, AMP-check fallback, troubleshooting docs, and memory updates for a new checkpoint commit.
-- Local `main` is ahead of `origin/main`.
+- This session has the missing default assets, AMP-check fallback, troubleshooting docs, and prior memory updates committed and pushed.
+- Local `main` matches `origin/main` before saving this Colab-run status update.
 - The Ultralytics micro work is API-compatible but not yet validated for convergence on a real dataset.
 - The one-epoch synthetic mAP is 0 and should not be presented as accuracy; it is only a training-path and supervision smoke test.
 - CUDA is not available on this host, so all validation was CPU-only.
 - No secrets or credentials were added.
 - A Colab quickstart is now available at `ULTRALYTICS_MICRO/docs/colab_micro_training.md`.
+- Current real-data Colab training is in progress on `/content/MPI-crack-1/data.yaml`.
 
 ## Exact Next Step
 
-- Commit and push the Colab AMP asset fix.
-- In Colab, run `git pull`, reinstall the editable package, and confirm `import ultralytics` resolves to `/content/ak/ULTRALYTICS_MICRO/ultralytics/__init__.py`.
-- Then run a longer convergence test on a real or larger synthetic micro-object dataset and compare against upstream `yolo26-p2.yaml` and `yolov8-p2.yaml`.
+- Save this Colab-run status update as a checkpoint commit.
+- Monitor the active Colab run through validation and collect `results.csv`, `args.yaml`, `weights/best.pt`, and `weights/last.pt`.
+- If the run underperforms on small crack targets, rerun with conservative tiny-object augmentation overrides: `mosaic=0.2 scale=0.25 degrees=0 perspective=0 close_mosaic=20`.

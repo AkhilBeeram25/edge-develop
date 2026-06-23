@@ -81,4 +81,15 @@
 - `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python ULTRALYTICS_MICRO/examples/micro_object_train_2px.py --model ULTRALYTICS_MICRO/ultralytics/cfg/models/26/yolo26-micro.yaml --image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2 --work-dir /tmp/ultralytics_micro_yolo26_2px_augfix` passes, keeps 2 instances per batch, produces nonzero box/class loss, saves `last.pt` and `best.pt`, and reports 0 mAP after one epoch.
 - `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python ULTRALYTICS_MICRO/examples/micro_object_train_2px.py --model ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml --image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2 --work-dir /tmp/ultralytics_micro_v8_2px_augfix` passes, keeps 2 instances per batch, produces nonzero box/class/DFL loss, saves `last.pt` and `best.pt`, and reports 0 mAP after one epoch.
 - ONNX export, TensorRT build, QAT conversion, and real native-tile hardware benchmarking have not been run yet.
-- A Colab-reported AMP startup crash caused by missing `ultralytics/assets/bus.jpg` has been fixed locally by tracking the default assets and making the AMP check skip rather than crash on `FileNotFoundError`; push and Colab re-test are required after the fix commit.
+- A Colab-reported AMP startup crash caused by missing `ultralytics/assets/bus.jpg` was fixed by tracking the default assets and making the AMP check skip rather than crash on `FileNotFoundError`.
+- Colab re-test after the fix reached active training with the modified micro architecture:
+  - code path: `/content/ak/ULTRALYTICS_MICRO`,
+  - model config: `/content/ak/ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml`,
+  - dataset: `/content/MPI-crack-1/data.yaml`,
+  - classes: `nc=3`,
+  - GPU: Tesla T4,
+  - command settings observed: `epochs=150`, `imgsz=960`, `batch=4`, `pretrained=yolov8n.pt`,
+  - startup evidence: custom modules `MicroC2f`, `SPDConv`, `MicroFPNFusion`, `MicroSPPF`, and `MicroDetect` were printed in the model summary,
+  - pretraining evidence: `Transferred 28/821 items from pretrained weights`, so `yolov8n.pt` is only a partial warm-start and not the architecture,
+  - AMP check passed after downloading `yolo26n.pt`,
+  - training started and reached epoch `1/150`, batch progress around `109/809`, with GPU memory around `9.45G`.

@@ -13,7 +13,8 @@
 - For `ULTRALYTICS_MICRO/`, run a real convergence experiment on a non-synthetic micro-object dataset and compare against upstream `yolo26-p2.yaml` / `yolov8-p2.yaml`.
 - For `ULTRALYTICS_MICRO/`, add size-sliced validation reporting for 2-to-5-pixel objects in the standard Ultralytics validator.
 - For `ULTRALYTICS_MICRO/`, benchmark P1-P5 latency and memory at target native sensor resolution before deployment.
-- After the Colab AMP asset fix is pushed, run `git pull` in Colab, reinstall `/content/ak/ULTRALYTICS_MICRO`, and retry micro training.
+- Monitor the active Colab run on `/content/MPI-crack-1/data.yaml`; save final `results.csv`, `args.yaml`, and best/last checkpoint paths when training completes.
+- If tiny/crack recall is weak, rerun with conservative augmentation overrides: `mosaic=0.2 scale=0.25 degrees=0 perspective=0 close_mosaic=20`.
 
 ## Next Steps After Restart
 
