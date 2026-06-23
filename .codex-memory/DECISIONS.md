@@ -44,3 +44,12 @@
 - Keep EMA weights in checkpoint payloads as `ema_model` and use EMA for validation when enabled.
 - Treat decoded validation metrics (`det/map`, precision, recall, and 2-to-5-pixel recall) as the first trainer-level detection-quality signal beyond loss.
 - Keep augmentation conservative until real data is available; horizontal flip is enabled through `horizontal_flip_prob` and updates YOLO labels in pixel space.
+
+## Ultralytics Micro-Object Fork
+
+- Keep the cloned Ultralytics code vendored under `ULTRALYTICS_MICRO/` rather than as a nested Git repository or submodule, so checkpoints contain the modified source.
+- Preserve Ultralytics training, validation, inference, and export entry points; implement micro-object support through standard modules, YAML configs, parser integration, and loss/assigner hooks.
+- Use P1-P5 detection for the micro configs. P1/2 is required so exact 2x2 raster evidence has a detection level before it collapses below one cell.
+- Replace stride-2 pyramid transitions in micro configs with `SPDConv` to preserve all 2x2 spatial phases before channel mixing.
+- Use `TinyObjectTaskAlignedAssigner` only for `MicroDetect` so upstream model behavior remains unchanged.
+- Keep exact 2x2 boxes through transform filtering by allowing candidate boxes with width/height at least 1 pixel.

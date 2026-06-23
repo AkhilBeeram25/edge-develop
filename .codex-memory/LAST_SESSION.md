@@ -2,64 +2,85 @@
 
 ## Timestamp
 
-- 2026-06-23T08:31:58+00:00
+- 2026-06-23T12:41:22+00:00
 
 ## What Was Completed
 
 - Read the required persistent memory files before starting work.
-- Confirmed the repository was clean on branch `main` before editing.
-- Reviewed the last handoff and resumed from the recorded next step.
-- Confirmed the latest prior Git state:
-  - `main` and `origin/main` were aligned at `40cb310`.
-  - Prior YOLO UPDATE merge commit was `960ec85`.
-- Added production-oriented YOLO UPDATE trainer features:
-  - checkpoint resume via `TrainConfig.resume_checkpoint` and `scripts/train.py --resume`,
-  - `last.pt` and `best.pt` checkpoint writing,
-  - EMA model tracking and checkpoint payload field `ema_model`,
-  - EMA-backed validation when EMA is enabled,
-  - decoded validation detection metrics: `det/map`, precision, recall, detection count, target count,
-  - 2-to-5-pixel recall and false-positive density from the existing micro-object metric helpers.
-- Added `YOLO_UPDATE/yolo_update/eval/detection_metrics.py` for dependency-light AP/mAP calculation.
-- Added conservative YOLO-format horizontal flip augmentation:
-  - configured through `horizontal_flip_prob`,
-  - applied only when the train script enables augmentation,
-  - updates label boxes in resized pixel coordinates.
-- Updated `YOLO_UPDATE/configs/train/default.yaml` with EMA, resume, augmentation, and validation decode settings.
-- Updated `YOLO_UPDATE/scripts/train.py` and `YOLO_UPDATE/scripts/validate.py` for resume and checkpoint validation.
-- Updated `YOLO_UPDATE/README.md` with resume, checkpoint validation, and metric behavior.
-- Extended tests to cover:
-  - `best.pt`,
-  - EMA checkpoint payloads,
-  - validation detection metrics,
-  - checkpoint resume to epoch 2,
-  - horizontal flip label coordinate transforms.
-- Autosave created durable code/doc/test commits while work was in progress:
-  - `bc70ca3` for config, dataset, and detection metrics,
-  - `c4c6910` for dataset cleanup,
-  - `e5a96ad` for trainer and script wiring,
-  - `9941c62` for README and tests.
+- Confirmed the repository state with `git status --short --branch` before editing.
+- Cloned the official Ultralytics repository from GitHub using network escalation because sandbox DNS blocked GitHub.
+- Vendored the clone into `ULTRALYTICS_MICRO/` as normal tracked files, not a nested Git repository.
+- Source baseline for the vendored tree:
+  - official Ultralytics `main`,
+  - commit `974dda2`.
+- Installed Ultralytics runtime validation dependencies into `.venv` using PyPI network escalation:
+  - `opencv-python-headless`,
+  - `matplotlib`,
+  - `requests`,
+  - `scipy`,
+  - `psutil`,
+  - `polars`,
+  - `ultralytics-thop`,
+  - `torchvision`.
+- Added micro-object architecture modules in `ULTRALYTICS_MICRO/ultralytics/nn/modules/micro.py`:
+  - `SPDConv` for space-to-depth downsampling,
+  - `MicroDilatedBlock`,
+  - `MicroC2f`,
+  - `MicroSPPF`,
+  - `MicroFPNFusion`,
+  - `MicroDetect`.
+- Integrated the new modules into Ultralytics:
+  - module exports in `ultralytics/nn/modules/__init__.py`,
+  - parser support in `ultralytics/nn/tasks.py`.
+- Added latest and YOLOv8-compatible model configs:
+  - `ULTRALYTICS_MICRO/ultralytics/cfg/models/26/yolo26-micro.yaml`,
+  - `ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml`.
+- Both configs build P1-P5 detection heads with strides `[2.0, 4.0, 8.0, 16.0, 32.0]`.
+- Added tiny-object training support:
+  - `TinyObjectTaskAlignedAssigner` in `ultralytics/utils/tal.py`,
+  - `MicroDetect` activates tiny assignment through `ultralytics/utils/loss.py`,
+  - exact 2x2 boxes are retained by relaxing `RandomPerspective.box_candidates()` in `ultralytics/data/augment.py`.
+- Added `ULTRALYTICS_MICRO/examples/micro_object_train_2px.py`, which generates a YOLO-format synthetic 2x2-pixel dataset and trains through the normal `YOLO(...).train(...)` API.
+- Added documentation:
+  - `ULTRALYTICS_MICRO/docs/micro_object_architecture.md`,
+  - a pointer from `ULTRALYTICS_MICRO/README.md`.
+- Added focused regression tests in `ULTRALYTICS_MICRO/tests/test_micro_architecture.py`.
 
 ## Validation Run
 
-- `.venv/bin/python -m compileall -q YOLO_UPDATE/yolo_update YOLO_UPDATE/scripts YOLO_UPDATE/tests` passed.
-- `.venv/bin/python -m pytest -q YOLO_UPDATE/tests` passed: 4 tests.
-- `.venv/bin/python -m pytest -q` passed: 11 tests.
-- `.venv/bin/python YOLO_UPDATE/scripts/smoke_train.py --variant micro_s --image-size 64 --steps 2 --save-dir /tmp/yolo_update_resume_smoke` passed and wrote `/tmp/yolo_update_resume_smoke/last.pt`.
-- `.venv/bin/python YOLO_UPDATE/scripts/validate_architecture.py` passed.
-- `.venv/bin/python YOLO_UPDATE/scripts/smoke_pipeline.py --variant micro_s --image-size 64 --num-classes 3` passed.
+- `.venv/bin/python -m compileall -q` on changed Ultralytics files passed.
+- `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python -m pytest -q ULTRALYTICS_MICRO/tests/test_micro_architecture.py` passed: 5 tests.
+- `.venv/bin/python -m pytest -q` passed: 11 existing project tests.
+- Direct instantiation/forward checks passed for:
+  - `ULTRALYTICS_MICRO/ultralytics/cfg/models/26/yolo26-micro.yaml`,
+  - `ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml`.
+- Synthetic 2x2 smoke training passed for YOLO26 micro:
+  - command used `--image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2`,
+  - run directory `/tmp/ultralytics_micro_yolo26_2px_augfix/runs/micro_2px`,
+  - kept 2 instances per batch,
+  - produced nonzero box/class loss,
+  - saved `last.pt` and `best.pt`,
+  - reported 0 mAP after one epoch.
+- Synthetic 2x2 smoke training passed for YOLOv8 micro:
+  - command used `--image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2`,
+  - run directory `/tmp/ultralytics_micro_v8_2px_augfix/runs/micro_2px`,
+  - kept 2 instances per batch,
+  - produced nonzero box/class/DFL loss,
+  - saved `last.pt` and `best.pt`,
+  - reported 0 mAP after one epoch.
 
 ## Current State
 
 - Workspace path is `/home/open/ak`.
 - Active branch is `main`.
-- Local `main` is ahead of `origin/main` by the autosave trainer commits plus the pending memory checkpoint.
-- `YOLO_UPDATE/` now has a more practical training loop, but it still needs a real dataset configuration before real training.
-- Local torch is CPU-only on this host; CUDA is not available.
+- The worktree has untracked `ULTRALYTICS_MICRO/` plus updated `.codex-memory/` files until the checkpoint commit is created.
+- Local `main` is already ahead of `origin/main` by earlier trainer autosave commits.
+- The Ultralytics micro work is API-compatible but not yet validated for convergence on a real dataset.
+- The one-epoch synthetic mAP is 0 and should not be presented as accuracy; it is only a training-path and supervision smoke test.
+- CUDA is not available on this host, so all validation was CPU-only.
 - No secrets or credentials were added.
 
 ## Exact Next Step
 
-- Commit the updated `.codex-memory/` files.
-- Then continue with one of:
-  - wire `YOLO_UPDATE/configs/data/dataset.example.yaml` to real dataset paths and class names, if available,
-  - or add the next production trainer feature: LR scheduling and structured metric logging.
+- Commit `ULTRALYTICS_MICRO/` and updated `.codex-memory/` files.
+- Then run a longer convergence test on a real or larger synthetic micro-object dataset and compare against upstream `yolo26-p2.yaml` and `yolov8-p2.yaml`.
