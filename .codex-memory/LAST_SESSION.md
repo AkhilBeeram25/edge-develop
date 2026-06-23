@@ -75,6 +75,7 @@
   - `references/micro_yolo_commands.md` with Colab and training commands,
   - `scripts/snapshot_memory.py` for non-Git `.codex-memory/snapshots/` recovery snapshots.
 - Ran `snapshot_memory.py` once, creating `.codex-memory/snapshots/20260623T175050Z.md` and `.codex-memory/LATEST_SNAPSHOT.md`.
+- Ran `snapshot_memory.py` again after memory updates, creating `.codex-memory/snapshots/20260623T175202Z.md` and refreshing `.codex-memory/LATEST_SNAPSHOT.md`.
 
 ## Validation Run
 
@@ -120,7 +121,6 @@
 
 ## Exact Next Step
 
-- Create a fresh memory snapshot after this skill-integration update.
 - Commit and push the portable skill copy plus memory snapshots.
 - Monitor the active Colab run through validation and collect `results.csv`, `args.yaml`, `weights/best.pt`, and `weights/last.pt`.
 - If the run underperforms on small crack targets, rerun with conservative tiny-object augmentation overrides: `mosaic=0.2 scale=0.25 degrees=0 perspective=0 close_mosaic=20`.
