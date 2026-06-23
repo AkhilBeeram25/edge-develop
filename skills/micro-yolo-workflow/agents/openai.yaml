@@ -1,0 +1,4 @@
+interface:
+  display_name: "Micro YOLO Workflow"
+  short_description: "Recover and run the micro-YOLO project fast"
+  default_prompt: "Use $micro-yolo-workflow to resume the micro-object YOLO project and save status."

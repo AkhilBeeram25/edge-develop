@@ -2,7 +2,7 @@
 
 ## Timestamp
 
-- 2026-06-23T17:23:39+00:00
+- 2026-06-23T17:51:26+00:00
 
 ## What Was Completed
 
@@ -66,6 +66,15 @@
 - Colab AMP check passed after downloading `yolo26n.pt`.
 - Training started successfully and was observed at epoch `1/150`, around `109/809` batches, using about `9.45G` GPU memory.
 - Noted that the observed run used default augmentation values in the log (`mosaic=1.0`, `scale=0.5`, `close_mosaic=10`), despite earlier recommended conservative settings.
+- User asked not to depend on Git alone for recovery and requested a productivity skill.
+- Created a Codex skill named `micro-yolo-workflow` using the official `skill-creator` workflow.
+- Installed the skill at `/home/open/.codex/skills/micro-yolo-workflow` for future auto-discovery.
+- Added a portable tracked copy at `skills/micro-yolo-workflow/`.
+- The skill includes:
+  - `SKILL.md` with the project recovery/status workflow,
+  - `references/micro_yolo_commands.md` with Colab and training commands,
+  - `scripts/snapshot_memory.py` for non-Git `.codex-memory/snapshots/` recovery snapshots.
+- Ran `snapshot_memory.py` once, creating `.codex-memory/snapshots/20260623T175050Z.md` and `.codex-memory/LATEST_SNAPSHOT.md`.
 
 ## Validation Run
 
@@ -90,6 +99,9 @@
   - saved `last.pt` and `best.pt`,
   - reported 0 mAP after one epoch.
 - The Colab asset fix was validated locally with syntax compile and focused micro tests before push; Colab then passed the AMP check and reached active training.
+- `micro-yolo-workflow` skill validation passed for the repo copy with `.venv/bin/python /home/open/.codex/skills/.system/skill-creator/scripts/quick_validate.py /home/open/ak/skills/micro-yolo-workflow`.
+- `micro-yolo-workflow` skill validation passed for the installed copy with `.venv/bin/python /home/open/.codex/skills/.system/skill-creator/scripts/quick_validate.py /home/open/.codex/skills/micro-yolo-workflow`.
+- `skills/micro-yolo-workflow/scripts/snapshot_memory.py` compiles and successfully created a non-Git snapshot.
 
 ## Current State
 
@@ -104,9 +116,11 @@
 - No secrets or credentials were added.
 - A Colab quickstart is now available at `ULTRALYTICS_MICRO/docs/colab_micro_training.md`.
 - Current real-data Colab training is in progress on `/content/MPI-crack-1/data.yaml`.
+- `micro-yolo-workflow` is now available for future sessions and should be invoked for this project.
 
 ## Exact Next Step
 
-- Save this Colab-run status update as a checkpoint commit.
+- Create a fresh memory snapshot after this skill-integration update.
+- Commit and push the portable skill copy plus memory snapshots.
 - Monitor the active Colab run through validation and collect `results.csv`, `args.yaml`, `weights/best.pt`, and `weights/last.pt`.
 - If the run underperforms on small crack targets, rerun with conservative tiny-object augmentation overrides: `mosaic=0.2 scale=0.25 degrees=0 perspective=0 close_mosaic=20`.

@@ -1,0 +1,319 @@
+# Memory Snapshot
+
+- Timestamp: `20260623T175050Z`
+- Workspace: `/home/open/ak`
+- Note: Installed micro-yolo-workflow skill for non-Git recovery.
+
+## Best-Effort Git Status
+
+```text
+## main...origin/main
+?? skills/
+```
+
+## .codex-memory/PROJECT_STATE.md
+
+# Project State
+
+## Workspace
+
+- Path: `/home/open/ak`
+- Purpose: persistent Codex memory and resumable development on an ARM64 SoC device that may shut down unexpectedly.
+
+## Important Commands
+
+- Check workspace state: `git status`
+- View recent checkpoints: `git log --oneline -5`
+- Read last session: `cat .codex-memory/LAST_SESSION.md`
+- Manual checkpoint: `savecodex`
+- Autosave checkpoint script: `/home/open/.local/bin/codex-checkpoint /home/open/ak`
+
+## Current Setup Status
+
+- Git repository initialized for durable checkpoints.
+- `.codex-memory/` created for persistent project memory.
+- Autosave checkpoint script installed at `/home/open/.local/bin/codex-checkpoint`.
+- Cron autosave configured to run once per minute for `/home/open/ak`.
+- Manual shell helper `savecodex` configured in `/home/open/.bashrc` when that file exists.
+- First durable checkpoint commit created.
+
+## Current Project Artifacts
+
+- `docs/YOLO_TECHNICAL_ROADMAP.md` contains the comprehensive technical roadmap for the proprietary YOLO-codenamed unified vision model, including micro-object architecture, multi-task heads, zero/few-shot strategy, edge inference, phased implementation, risks, and acceptance metrics.
+- `src/yolo_micro/` contains the initial Phase 1 implementation scaffold:
+  - P1/P2-preserving PyTorch model modules for YOLO-Micro backbone, neck, unified heads, mask prototypes, and open-vocabulary prototype scoring.
+  - Tiny-object assignment, NWD/tiny-box loss helpers, and multi-task balancing modules.
+  - Dependency-light native tiling, augmentation guards, few-shot episode sampling, micro-object metrics, domain slicing, and weighted box fusion.
+  - ONNX, TensorRT command, and QAT deployment entry points.
+- `configs/yolo_micro_b.yaml` is the baseline Micro-B configuration.
+- `tests/` contains standard-library unit tests for dependency-light utilities.
+- `scripts/smoke_torch_pipeline.py` runs a PyTorch smoke pipeline covering model forward, decode, tiny detection loss, multi-task loss combination, and backward pass.
+- `YOLO_UPDATE/` is the self-contained trainable model directory for the modified YOLO-family architecture. It includes:
+  - `yolo_update/` package with backbone, neck, heads, losses, inference, dataset loading, training criterion, and trainer.
+  - `configs/models/`, `configs/data/`, and `configs/train/` YAML files.
+  - `scripts/train.py`, `scripts/validate.py`, `scripts/smoke_pipeline.py`, `scripts/smoke_train.py`, and `scripts/validate_architecture.py`.
+  - `docs/YOLO_ARCHITECTURE_VALIDATION.md` documenting why the model is a YOLO-family modification rather than a random architecture.
+  - `docs/CHANGES_BENEFITS_AND_MICRO_OBJECT_MATH.md` documenting what changed, why the changes help, major differences from YOLO, and the equations used for 2x2-pixel object handling.
+  - `tests/` for architecture and synthetic training validation.
+- `YOLO_UPDATE` trainer now supports production-oriented basics:
+  - checkpoint resume through config or `scripts/train.py --resume`,
+  - `last.pt` and `best.pt` checkpoint writing,
+  - EMA model weights saved as `ema_model`,
+  - decoded validation detection metrics including `val/det/map`, precision, recall, and 2-to-5-pixel recall,
+  - optional horizontal flip augmentation for YOLO-format training labels.
+- `ULTRALYTICS_MICRO/` is a vendored clone of the official Ultralytics repository from `main` commit `974dda2`, modified for 2x2-pixel micro-object detection while preserving the standard Ultralytics training/inference API. It includes:
+  - `ultralytics/nn/modules/micro.py` with `SPDConv`, `MicroC2f`, `MicroSPPF`, `MicroFPNFusion`, and `MicroDetect`.
+  - parser integration in `ultralytics/nn/tasks.py` and module exports in `ultralytics/nn/modules/__init__.py`.
+  - tiny-aware assignment via `TinyObjectTaskAlignedAssigner` in `ultralytics/utils/tal.py`, activated only by `MicroDetect` through `ultralytics/utils/loss.py`.
+  - a 2px-safe transform guard in `ultralytics/data/augment.py` so exact 2x2 boxes are not filtered before loss assignment.
+  - model configs `ultralytics/cfg/models/26/yolo26-micro.yaml` and `ultralytics/cfg/models/v8/yolov8-micro.yaml`.
+  - synthetic 2x2 training demo `examples/micro_object_train_2px.py`.
+  - documentation `docs/micro_object_architecture.md`.
+  - Colab setup and training quickstart `docs/colab_micro_training.md`.
+  - focused tests in `tests/test_micro_architecture.py`.
+  - default Ultralytics assets `ultralytics/assets/bus.jpg` and `ultralytics/assets/zidane.jpg` are tracked because CUDA AMP startup checks reference `bus.jpg`.
+
+## Local Python Environment
+
+- `.venv/` was created with `virtualenv` because system `python3 -m venv` is unavailable without the missing Debian `python3.11-venv` package.
+- Installed local validation dependencies in `.venv`: `torch==2.12.1`, `pytest==9.1.1`, `numpy==2.4.6`, Pillow, PyYAML, and Ultralytics runtime dependencies needed for local validation (`opencv-python-headless`, `matplotlib`, `requests`, `scipy`, `psutil`, `polars`, `ultralytics-thop`, and `torchvision`).
+- PyPI resolved a GPU-capable ARM64 PyTorch build (`torch==2.12.1+cu130`) with CUDA runtime packages; CUDA is not available on this host (`torch.cuda.is_available() == False`).
+- `.venv/` is ignored and is not committed.
+
+## Validation Status
+
+- `.venv/bin/python -m compileall -q src tests scripts` passes.
+- `.venv/bin/python -m pytest -q` passes: 11 tests.
+- `.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_s --image-size 64 --num-classes 3` passes.
+- `.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_b --image-size 128 --num-classes 5` passes.
+- `.venv/bin/python scripts/smoke_torch_pipeline.py --variant micro_s --image-size 64 --num-classes 3 --p1-detector` passes.
+- `.venv/bin/python YOLO_UPDATE/scripts/validate_architecture.py` passes and reports that YOLO UPDATE is a YOLO-family architecture with targeted micro-object modifications.
+- `.venv/bin/python -m pytest -q YOLO_UPDATE/tests` passes: 4 tests.
+- Documentation sanity check for non-ASCII characters in the new YOLO UPDATE docs passes.
+- `.venv/bin/python YOLO_UPDATE/scripts/smoke_pipeline.py --variant micro_s --image-size 64 --num-classes 3` passes.
+- `.venv/bin/python YOLO_UPDATE/scripts/smoke_train.py --variant micro_s --image-size 64 --steps 2 --save-dir /tmp/yolo_update_resume_smoke` passes and writes checkpoints under `/tmp`.
+- `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python -m pytest -q ULTRALYTICS_MICRO/tests/test_micro_architecture.py` passes: 5 tests.
+- `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python ULTRALYTICS_MICRO/examples/micro_object_train_2px.py --model ULTRALYTICS_MICRO/ultralytics/cfg/models/26/yolo26-micro.yaml --image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2 --work-dir /tmp/ultralytics_micro_yolo26_2px_augfix` passes, keeps 2 instances per batch, produces nonzero box/class loss, saves `last.pt` and `best.pt`, and reports 0 mAP after one epoch.
+- `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python ULTRALYTICS_MICRO/examples/micro_object_train_2px.py --model ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml --image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2 --work-dir /tmp/ultralytics_micro_v8_2px_augfix` passes, keeps 2 instances per batch, produces nonzero box/class/DFL loss, saves `last.pt` and `best.pt`, and reports 0 mAP after one epoch.
+- ONNX export, TensorRT build, QAT conversion, and real native-tile hardware benchmarking have not been run yet.
+- A Colab-reported AMP startup crash caused by missing `ultralytics/assets/bus.jpg` was fixed by tracking the default assets and making the AMP check skip rather than crash on `FileNotFoundError`.
+- Colab re-test after the fix reached active training with the modified micro architecture:
+  - code path: `/content/ak/ULTRALYTICS_MICRO`,
+  - model config: `/content/ak/ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml`,
+  - dataset: `/content/MPI-crack-1/data.yaml`,
+  - classes: `nc=3`,
+  - GPU: Tesla T4,
+  - command settings observed: `epochs=150`, `imgsz=960`, `batch=4`, `pretrained=yolov8n.pt`,
+  - startup evidence: custom modules `MicroC2f`, `SPDConv`, `MicroFPNFusion`, `MicroSPPF`, and `MicroDetect` were printed in the model summary,
+  - pretraining evidence: `Transferred 28/821 items from pretrained weights`, so `yolov8n.pt` is only a partial warm-start and not the architecture,
+  - AMP check passed after downloading `yolo26n.pt`,
+  - training started and reached epoch `1/150`, batch progress around `109/809`, with GPU memory around `9.45G`.
+
+
+## .codex-memory/TODO.md
+
+# TODO
+
+## Pending Tasks
+
+- Use small Git commits as durable checkpoints after meaningful changes.
+- After restart, confirm the latest commit includes any work completed before shutdown.
+- Replace `YOLO_UPDATE/configs/data/dataset.example.yaml` with the real dataset paths and class names before real training.
+- Review `YOLO_UPDATE/docs/CHANGES_BENEFITS_AND_MICRO_OBJECT_MATH.md` with the model team before freezing the public architecture explanation.
+- Run a larger native-tile smoke benchmark once hardware memory/thermal limits are acceptable.
+- Extend the `YOLO_UPDATE` trainer with remaining production features: distributed training, LR scheduling, richer micro-object augmentations, structured metric logging, and export-time EMA selection.
+- Add decoder-to-candidate thresholding and hardware benchmark scripts once PyTorch/TensorRT are available.
+- Test ONNX export and TensorRT build on an edge device with the actual accelerator stack.
+- For `ULTRALYTICS_MICRO/`, run a real convergence experiment on a non-synthetic micro-object dataset and compare against upstream `yolo26-p2.yaml` / `yolov8-p2.yaml`.
+- For `ULTRALYTICS_MICRO/`, add size-sliced validation reporting for 2-to-5-pixel objects in the standard Ultralytics validator.
+- For `ULTRALYTICS_MICRO/`, benchmark P1-P5 latency and memory at target native sensor resolution before deployment.
+- Monitor the active Colab run on `/content/MPI-crack-1/data.yaml`; save final `results.csv`, `args.yaml`, and best/last checkpoint paths when training completes.
+- If tiny/crack recall is weak, rerun with conservative augmentation overrides: `mosaic=0.2 scale=0.25 degrees=0 perspective=0 close_mosaic=20`.
+
+## Next Steps After Restart
+
+- Run `cd /home/open/ak`.
+- Run `git status`.
+- Read `.codex-memory/LAST_SESSION.md`.
+- Continue from the exact next step listed there.
+
+## Unresolved Questions
+
+- Target class taxonomy, sensor resolution, edge hardware, dataset schema, and latency budget are not yet specified.
+
+
+## .codex-memory/DECISIONS.md
+
+# Decisions
+
+## Durable Checkpoints
+
+- Use Git commits as durable checkpoints so work can be resumed after unexpected shutdown.
+
+## Persistent Memory
+
+- Use `.codex-memory/` as project memory for Codex state, tasks, decisions, and last-session recovery notes.
+
+## Secrets
+
+- Do not store secrets, tokens, private keys, passwords, or credentials in memory files, logs, or commits.
+
+## YOLO Roadmap Documentation
+
+- Store the proprietary YOLO-codenamed vision model roadmap as `docs/YOLO_TECHNICAL_ROADMAP.md`.
+- Treat native-resolution tiling, P1/P2 feature preservation, anchor-free assignment, class-agnostic objectness, and mixed-precision edge deployment as the core architecture recommendations for 2 to 5 pixel object detection.
+- Treat open-vocabulary embeddings and few-shot prototype adaptation as extensions built after tiny-object detection is stable, not as the first implementation step.
+
+## Phase 1 Implementation
+
+- Use a `src/yolo_micro/` Python package with PyTorch required only for model, loss, decoder, and deployment paths.
+- Keep native tiling, augmentation guards, few-shot sampling, metrics, assignment level selection, and weighted box fusion dependency-light so they can run on edge and data-QA machines without PyTorch.
+- Keep assignment separate from `TinyDetectionLoss`; the trainer should pass matched positive tensors after size-aware dynamic assignment.
+- Export should wrap the model into a flat tuple of tensors for ONNX instead of relying on nested dictionaries.
+
+## Runtime Architecture Adjustment
+
+- Default YOLO-Micro detection levels are P2-P5. P1 remains a detail/refinement path by default.
+- A full P1 detection head is supported only via `include_p1_head=True` / `--p1-detector` accuracy mode because runtime validation showed the high-resolution head is costly on CPU and the roadmap recommends P2 as the primary micro-object detection level.
+- Include NumPy in the `torch` extra because PyTorch emits runtime warnings and some tensor interop paths are degraded without it.
+
+## YOLO UPDATE Standalone Directory
+
+- Treat `YOLO_UPDATE/` as the standalone trainable directory for the modified YOLO-family model, similar in spirit to a YOLO project directory with configs, package code, scripts, docs, and tests in one place.
+- Do not describe YOLO UPDATE as a random architecture. The validation verdict is that it preserves YOLO-family backbone/neck/head structure and adds targeted micro-object modifications.
+- Use `YOLO_UPDATE/scripts/validate_architecture.py` as the reproducible architecture-lineage check.
+- Use `YOLO_UPDATE/scripts/smoke_train.py` as the minimal trainability check until a real dataset is wired in.
+
+## YOLO UPDATE Trainer Conventions
+
+- Save both `last.pt` and `best.pt` during training.
+- Keep EMA weights in checkpoint payloads as `ema_model` and use EMA for validation when enabled.
+- Treat decoded validation metrics (`det/map`, precision, recall, and 2-to-5-pixel recall) as the first trainer-level detection-quality signal beyond loss.
+- Keep augmentation conservative until real data is available; horizontal flip is enabled through `horizontal_flip_prob` and updates YOLO labels in pixel space.
+
+## Ultralytics Micro-Object Fork
+
+- Keep the cloned Ultralytics code vendored under `ULTRALYTICS_MICRO/` rather than as a nested Git repository or submodule, so checkpoints contain the modified source.
+- Preserve Ultralytics training, validation, inference, and export entry points; implement micro-object support through standard modules, YAML configs, parser integration, and loss/assigner hooks.
+- Use P1-P5 detection for the micro configs. P1/2 is required so exact 2x2 raster evidence has a detection level before it collapses below one cell.
+- Replace stride-2 pyramid transitions in micro configs with `SPDConv` to preserve all 2x2 spatial phases before channel mixing.
+- Use `TinyObjectTaskAlignedAssigner` only for `MicroDetect` so upstream model behavior remains unchanged.
+- Keep exact 2x2 boxes through transform filtering by allowing candidate boxes with width/height at least 1 pixel.
+- In Colab, install `/content/ak/ULTRALYTICS_MICRO` in editable mode and verify `ultralytics.__file__` points inside the cloned repository before training.
+- Track only the small default Ultralytics package assets needed by startup checks while continuing to ignore general generated images and videos.
+
+
+## .codex-memory/LAST_SESSION.md
+
+# Last Session
+
+## Timestamp
+
+- 2026-06-23T17:23:39+00:00
+
+## What Was Completed
+
+- Read the required persistent memory files before starting work.
+- Confirmed the repository state with `git status --short --branch` before editing.
+- Cloned the official Ultralytics repository from GitHub using network escalation because sandbox DNS blocked GitHub.
+- Vendored the clone into `ULTRALYTICS_MICRO/` as normal tracked files, not a nested Git repository.
+- Source baseline for the vendored tree:
+  - official Ultralytics `main`,
+  - commit `974dda2`.
+- Installed Ultralytics runtime validation dependencies into `.venv` using PyPI network escalation:
+  - `opencv-python-headless`,
+  - `matplotlib`,
+  - `requests`,
+  - `scipy`,
+  - `psutil`,
+  - `polars`,
+  - `ultralytics-thop`,
+  - `torchvision`.
+- Added micro-object architecture modules in `ULTRALYTICS_MICRO/ultralytics/nn/modules/micro.py`:
+  - `SPDConv` for space-to-depth downsampling,
+  - `MicroDilatedBlock`,
+  - `MicroC2f`,
+  - `MicroSPPF`,
+  - `MicroFPNFusion`,
+  - `MicroDetect`.
+- Integrated the new modules into Ultralytics:
+  - module exports in `ultralytics/nn/modules/__init__.py`,
+  - parser support in `ultralytics/nn/tasks.py`.
+- Added latest and YOLOv8-compatible model configs:
+  - `ULTRALYTICS_MICRO/ultralytics/cfg/models/26/yolo26-micro.yaml`,
+  - `ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml`.
+- Both configs build P1-P5 detection heads with strides `[2.0, 4.0, 8.0, 16.0, 32.0]`.
+- Added tiny-object training support:
+  - `TinyObjectTaskAlignedAssigner` in `ultralytics/utils/tal.py`,
+  - `MicroDetect` activates tiny assignment through `ultralytics/utils/loss.py`,
+  - exact 2x2 boxes are retained by relaxing `RandomPerspective.box_candidates()` in `ultralytics/data/augment.py`.
+- Added `ULTRALYTICS_MICRO/examples/micro_object_train_2px.py`, which generates a YOLO-format synthetic 2x2-pixel dataset and trains through the normal `YOLO(...).train(...)` API.
+- Added documentation:
+  - `ULTRALYTICS_MICRO/docs/micro_object_architecture.md`,
+  - `ULTRALYTICS_MICRO/docs/colab_micro_training.md`,
+  - a pointer from `ULTRALYTICS_MICRO/README.md`.
+- Updated the Ultralytics README micro-object note to link the Colab quickstart.
+- Added focused regression tests in `ULTRALYTICS_MICRO/tests/test_micro_architecture.py`.
+- Diagnosed a Colab training crash during the CUDA AMP self-check: `ultralytics/assets/bus.jpg` existed locally but was ignored by `ULTRALYTICS_MICRO/.gitignore`, so it was not present after cloning from GitHub.
+- Updated `ULTRALYTICS_MICRO/.gitignore` so `ultralytics/assets/bus.jpg` and `ultralytics/assets/zidane.jpg` are tracked.
+- Updated `ULTRALYTICS_MICRO/ultralytics/utils/checks.py` so the AMP startup self-check skips instead of crashing on `FileNotFoundError`.
+- Added a Colab troubleshooting note for the missing `bus.jpg` AMP-check failure.
+- Pushed the Colab AMP asset fix to `origin/main`.
+- User reran Colab training and confirmed active training with:
+  - `model=/content/ak/ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml`,
+  - `pretrained=yolov8n.pt`,
+  - `data=/content/MPI-crack-1/data.yaml`,
+  - `epochs=150`,
+  - `imgsz=960`,
+  - `batch=4`,
+  - Tesla T4 GPU,
+  - `nc=3`.
+- Reviewed the Colab log and confirmed the run is using the modified micro architecture, because the model summary includes `MicroC2f`, `SPDConv`, `MicroFPNFusion`, `MicroSPPF`, and `MicroDetect`.
+- Confirmed `yolov8n.pt` is only a partial weight source, with log line `Transferred 28/821 items from pretrained weights`.
+- Colab AMP check passed after downloading `yolo26n.pt`.
+- Training started successfully and was observed at epoch `1/150`, around `109/809` batches, using about `9.45G` GPU memory.
+- Noted that the observed run used default augmentation values in the log (`mosaic=1.0`, `scale=0.5`, `close_mosaic=10`), despite earlier recommended conservative settings.
+
+## Validation Run
+
+- `.venv/bin/python -m compileall -q` on changed Ultralytics files passed.
+- `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python -m pytest -q ULTRALYTICS_MICRO/tests/test_micro_architecture.py` passed: 5 tests.
+- `.venv/bin/python -m pytest -q` passed: 11 existing project tests.
+- Direct instantiation/forward checks passed for:
+  - `ULTRALYTICS_MICRO/ultralytics/cfg/models/26/yolo26-micro.yaml`,
+  - `ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml`.
+- Synthetic 2x2 smoke training passed for YOLO26 micro:
+  - command used `--image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2`,
+  - run directory `/tmp/ultralytics_micro_yolo26_2px_augfix/runs/micro_2px`,
+  - kept 2 instances per batch,
+  - produced nonzero box/class loss,
+  - saved `last.pt` and `best.pt`,
+  - reported 0 mAP after one epoch.
+- Synthetic 2x2 smoke training passed for YOLOv8 micro:
+  - command used `--image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2`,
+  - run directory `/tmp/ultralytics_micro_v8_2px_augfix/runs/micro_2px`,
+  - kept 2 instances per batch,
+  - produced nonzero box/class/DFL loss,
+  - saved `last.pt` and `best.pt`,
+  - reported 0 mAP after one epoch.
+- The Colab asset fix was validated locally with syntax compile and focused micro tests before push; Colab then passed the AMP check and reached active training.
+
+## Current State
+
+- Workspace path is `/home/open/ak`.
+- Active branch is `main`.
+- The previous Ultralytics micro implementation and Colab quickstart are already committed and pushed.
+- This session has the missing default assets, AMP-check fallback, troubleshooting docs, and prior memory updates committed and pushed.
+- Local `main` matches `origin/main` before saving this Colab-run status update.
+- The Ultralytics micro work is API-compatible but not yet validated for convergence on a real dataset.
+- The one-epoch synthetic mAP is 0 and should not be presented as accuracy; it is only a training-path and supervision smoke test.
+- CUDA is not available on this host, so all validation was CPU-only.
+- No secrets or credentials were added.
+- A Colab quickstart is now available at `ULTRALYTICS_MICRO/docs/colab_micro_training.md`.
+- Current real-data Colab training is in progress on `/content/MPI-crack-1/data.yaml`.
+
+## Exact Next Step
+
+- Save this Colab-run status update as a checkpoint commit.
+- Monitor the active Colab run through validation and collect `results.csv`, `args.yaml`, `weights/best.pt`, and `weights/last.pt`.
+- If the run underperforms on small crack targets, rerun with conservative tiny-object augmentation overrides: `mosaic=0.2 scale=0.25 degrees=0 perspective=0 close_mosaic=20`.

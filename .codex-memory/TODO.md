@@ -15,6 +15,8 @@
 - For `ULTRALYTICS_MICRO/`, benchmark P1-P5 latency and memory at target native sensor resolution before deployment.
 - Monitor the active Colab run on `/content/MPI-crack-1/data.yaml`; save final `results.csv`, `args.yaml`, and best/last checkpoint paths when training completes.
 - If tiny/crack recall is weak, rerun with conservative augmentation overrides: `mosaic=0.2 scale=0.25 degrees=0 perspective=0 close_mosaic=20`.
+- Use `$micro-yolo-workflow` at the start of future sessions to recover context without relying on Git history.
+- Run `skills/micro-yolo-workflow/scripts/snapshot_memory.py` after meaningful status updates so `.codex-memory/snapshots/` remains current even if Git is unavailable.
 
 ## Next Steps After Restart
 

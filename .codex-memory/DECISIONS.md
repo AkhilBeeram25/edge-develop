@@ -7,6 +7,7 @@
 ## Persistent Memory
 
 - Use `.codex-memory/` as project memory for Codex state, tasks, decisions, and last-session recovery notes.
+- Do not rely only on Git for context recovery. Use the `micro-yolo-workflow` skill and `.codex-memory/snapshots/` as the non-Git recovery path.
 
 ## Secrets
 
@@ -55,3 +56,9 @@
 - Keep exact 2x2 boxes through transform filtering by allowing candidate boxes with width/height at least 1 pixel.
 - In Colab, install `/content/ak/ULTRALYTICS_MICRO` in editable mode and verify `ultralytics.__file__` points inside the cloned repository before training.
 - Track only the small default Ultralytics package assets needed by startup checks while continuing to ignore general generated images and videos.
+
+## Codex Skill Integration
+
+- Install a project-specific Codex skill named `micro-yolo-workflow` at `/home/open/.codex/skills/micro-yolo-workflow` for auto-discovery.
+- Keep a portable tracked copy at `skills/micro-yolo-workflow/`.
+- The skill's job is context recovery, Colab/micro-YOLO command recall, status-saving discipline, and non-Git memory snapshot creation.
