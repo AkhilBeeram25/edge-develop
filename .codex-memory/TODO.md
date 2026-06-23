@@ -13,7 +13,7 @@
 - For `ULTRALYTICS_MICRO/`, run a real convergence experiment on a non-synthetic micro-object dataset and compare against upstream `yolo26-p2.yaml` / `yolov8-p2.yaml`.
 - For `ULTRALYTICS_MICRO/`, add size-sliced validation reporting for 2-to-5-pixel objects in the standard Ultralytics validator.
 - For `ULTRALYTICS_MICRO/`, benchmark P1-P5 latency and memory at target native sensor resolution before deployment.
-- Push the committed repository to a remote Git provider, then verify the Colab quickstart can clone it and import `ULTRALYTICS_MICRO/ultralytics`.
+- After the Colab AMP asset fix is pushed, run `git pull` in Colab, reinstall `/content/ak/ULTRALYTICS_MICRO`, and retry micro training.
 
 ## Next Steps After Restart
 

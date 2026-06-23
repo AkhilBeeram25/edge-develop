@@ -56,6 +56,7 @@
   - documentation `docs/micro_object_architecture.md`.
   - Colab setup and training quickstart `docs/colab_micro_training.md`.
   - focused tests in `tests/test_micro_architecture.py`.
+  - default Ultralytics assets `ultralytics/assets/bus.jpg` and `ultralytics/assets/zidane.jpg` are tracked because CUDA AMP startup checks reference `bus.jpg`.
 
 ## Local Python Environment
 
@@ -80,3 +81,4 @@
 - `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python ULTRALYTICS_MICRO/examples/micro_object_train_2px.py --model ULTRALYTICS_MICRO/ultralytics/cfg/models/26/yolo26-micro.yaml --image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2 --work-dir /tmp/ultralytics_micro_yolo26_2px_augfix` passes, keeps 2 instances per batch, produces nonzero box/class loss, saves `last.pt` and `best.pt`, and reports 0 mAP after one epoch.
 - `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python ULTRALYTICS_MICRO/examples/micro_object_train_2px.py --model ULTRALYTICS_MICRO/ultralytics/cfg/models/v8/yolov8-micro.yaml --image-size 64 --object-size 2 --train-samples 4 --val-samples 2 --epochs 1 --batch 2 --work-dir /tmp/ultralytics_micro_v8_2px_augfix` passes, keeps 2 instances per batch, produces nonzero box/class/DFL loss, saves `last.pt` and `best.pt`, and reports 0 mAP after one epoch.
 - ONNX export, TensorRT build, QAT conversion, and real native-tile hardware benchmarking have not been run yet.
+- A Colab-reported AMP startup crash caused by missing `ultralytics/assets/bus.jpg` has been fixed locally by tracking the default assets and making the AMP check skip rather than crash on `FileNotFoundError`; push and Colab re-test are required after the fix commit.

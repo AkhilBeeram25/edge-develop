@@ -54,3 +54,4 @@
 - Use `TinyObjectTaskAlignedAssigner` only for `MicroDetect` so upstream model behavior remains unchanged.
 - Keep exact 2x2 boxes through transform filtering by allowing candidate boxes with width/height at least 1 pixel.
 - In Colab, install `/content/ak/ULTRALYTICS_MICRO` in editable mode and verify `ultralytics.__file__` points inside the cloned repository before training.
+- Track only the small default Ultralytics package assets needed by startup checks while continuing to ignore general generated images and videos.

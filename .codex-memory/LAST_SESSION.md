@@ -2,7 +2,7 @@
 
 ## Timestamp
 
-- 2026-06-23T14:34:21+00:00
+- 2026-06-23T15:27:53+00:00
 
 ## What Was Completed
 
@@ -47,6 +47,10 @@
   - a pointer from `ULTRALYTICS_MICRO/README.md`.
 - Updated the Ultralytics README micro-object note to link the Colab quickstart.
 - Added focused regression tests in `ULTRALYTICS_MICRO/tests/test_micro_architecture.py`.
+- Diagnosed a Colab training crash during the CUDA AMP self-check: `ultralytics/assets/bus.jpg` existed locally but was ignored by `ULTRALYTICS_MICRO/.gitignore`, so it was not present after cloning from GitHub.
+- Updated `ULTRALYTICS_MICRO/.gitignore` so `ultralytics/assets/bus.jpg` and `ultralytics/assets/zidane.jpg` are tracked.
+- Updated `ULTRALYTICS_MICRO/ultralytics/utils/checks.py` so the AMP startup self-check skips instead of crashing on `FileNotFoundError`.
+- Added a Colab troubleshooting note for the missing `bus.jpg` AMP-check failure.
 
 ## Validation Run
 
@@ -70,13 +74,17 @@
   - produced nonzero box/class/DFL loss,
   - saved `last.pt` and `best.pt`,
   - reported 0 mAP after one epoch.
+- Pending validation for this Colab asset fix:
+  - compile changed Ultralytics files,
+  - run focused micro tests,
+  - confirm the assets are tracked by Git.
 
 ## Current State
 
 - Workspace path is `/home/open/ak`.
 - Active branch is `main`.
-- The previous Ultralytics micro implementation is already committed.
-- This session adds the Colab quickstart, README pointer, and memory updates for a new checkpoint commit.
+- The previous Ultralytics micro implementation and Colab quickstart are already committed and pushed.
+- This session adds the missing default assets, AMP-check fallback, troubleshooting docs, and memory updates for a new checkpoint commit.
 - Local `main` is ahead of `origin/main`.
 - The Ultralytics micro work is API-compatible but not yet validated for convergence on a real dataset.
 - The one-epoch synthetic mAP is 0 and should not be presented as accuracy; it is only a training-path and supervision smoke test.
@@ -86,6 +94,6 @@
 
 ## Exact Next Step
 
-- Push the latest commits to the remote repository that Colab will clone.
-- In Colab, run the quickstart and confirm `import ultralytics` resolves to `/content/ak/ULTRALYTICS_MICRO/ultralytics/__init__.py`.
+- Commit and push the Colab AMP asset fix.
+- In Colab, run `git pull`, reinstall the editable package, and confirm `import ultralytics` resolves to `/content/ak/ULTRALYTICS_MICRO/ultralytics/__init__.py`.
 - Then run a longer convergence test on a real or larger synthetic micro-object dataset and compare against upstream `yolo26-p2.yaml` and `yolov8-p2.yaml`.
