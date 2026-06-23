@@ -203,6 +203,11 @@ calibration_*.npy
 *.ico
 *.raw
 
+# Keep default package assets used by startup/AMP checks.
+!/ultralytics/assets/
+!/ultralytics/assets/bus.jpg
+!/ultralytics/assets/zidane.jpg
+
 # Training logs
 args.yaml
 results.csv

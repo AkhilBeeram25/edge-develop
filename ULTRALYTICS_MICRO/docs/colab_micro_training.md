@@ -92,6 +92,18 @@ from `yolov8n.pt`:
 For very small GPUs, reduce `batch` first. If training is still out of memory,
 reduce `imgsz` to `768` or `640`.
 
+If an older checkout fails during the startup AMP check with a missing
+`ultralytics/assets/bus.jpg`, update the repository and reinstall:
+
+```bash
+%cd /content/ak
+!git pull
+!python -m pip install -e /content/ak/ULTRALYTICS_MICRO
+```
+
+As a temporary workaround, add `amp=False` to the training command. This avoids
+the AMP self-check but trains without automatic mixed precision.
+
 ## 5. Alternative Python API
 
 ```python
