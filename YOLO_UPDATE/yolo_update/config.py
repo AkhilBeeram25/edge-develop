@@ -46,6 +46,12 @@ class TrainConfig:
     log_interval: int = 10
     negative_quality_weight: float = 0.25
     max_grad_norm: float = 10.0
+    ema_decay: float = 0.999
+    resume_checkpoint: str = ""
+    horizontal_flip_prob: float = 0.0
+    validation_score_threshold: float = 0.05
+    validation_max_detections: int = 100
+    validation_iou_threshold: float = 0.5
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "TrainConfig":
@@ -64,5 +70,18 @@ class TrainConfig:
                 data.get("negative_quality_weight", cls.negative_quality_weight)
             ),
             max_grad_norm=float(data.get("max_grad_norm", cls.max_grad_norm)),
+            ema_decay=float(data.get("ema_decay", cls.ema_decay)),
+            resume_checkpoint=str(data.get("resume_checkpoint", cls.resume_checkpoint) or ""),
+            horizontal_flip_prob=float(
+                data.get("horizontal_flip_prob", cls.horizontal_flip_prob)
+            ),
+            validation_score_threshold=float(
+                data.get("validation_score_threshold", cls.validation_score_threshold)
+            ),
+            validation_max_detections=int(
+                data.get("validation_max_detections", cls.validation_max_detections)
+            ),
+            validation_iou_threshold=float(
+                data.get("validation_iou_threshold", cls.validation_iou_threshold)
+            ),
         )
-
