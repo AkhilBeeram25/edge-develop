@@ -28,7 +28,9 @@ Find detailed documentation in the [Ultralytics Docs](https://docs.ultralytics.c
 Request an Enterprise License for commercial use at [Ultralytics Licensing](https://www.ultralytics.com/license).
 
 Micro-object extension: this vendored tree adds `yolo26-micro.yaml` and `yolov8-micro.yaml` for P1/P2-preserving
-2x2-pixel object detection experiments. See [docs/micro_object_architecture.md](docs/micro_object_architecture.md).
+2x2-pixel object detection experiments. See [docs/micro_object_architecture.md](docs/micro_object_architecture.md)
+for the architecture notes and [docs/colab_micro_training.md](docs/colab_micro_training.md) for a Colab training
+quickstart.
 
 <a href="https://platform.ultralytics.com/ultralytics/yolo26" target="_blank">
   <img width="100%" src="https://raw.githubusercontent.com/ultralytics/assets/refs/heads/main/yolo/performance-comparison.png" alt="YOLO26 performance plots">

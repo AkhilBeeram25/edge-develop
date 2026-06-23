@@ -54,6 +54,7 @@
   - model configs `ultralytics/cfg/models/26/yolo26-micro.yaml` and `ultralytics/cfg/models/v8/yolov8-micro.yaml`.
   - synthetic 2x2 training demo `examples/micro_object_train_2px.py`.
   - documentation `docs/micro_object_architecture.md`.
+  - Colab setup and training quickstart `docs/colab_micro_training.md`.
   - focused tests in `tests/test_micro_architecture.py`.
 
 ## Local Python Environment
