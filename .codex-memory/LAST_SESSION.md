@@ -2,10 +2,18 @@
 
 ## Timestamp
 
-- 2026-06-23T17:51:26+00:00
+- 2026-06-25T17:06:52+00:00
 
 ## What Was Completed
 
+- Read the required persistent memory files before starting work.
+- Ran the requested Codex CLI installer:
+  - command: `sh -c 'curl -fsSL https://chatgpt.com/codex/install.sh | CODEX_NON_INTERACTIVE=1 sh'`,
+  - update: Codex CLI `0.141.0` to `0.142.2`,
+  - platform: Linux ARM64,
+  - install path: `/home/open/.codex/packages/standalone/releases/0.142.2-aarch64-unknown-linux-musl`,
+  - result: installer completed successfully.
+- Confirmed the repository state with `git status --short --branch` before editing memory files.
 - Read the required persistent memory files before starting work.
 - Confirmed the repository state with `git status --short --branch` before editing.
 - Cloned the official Ultralytics repository from GitHub using network escalation because sandbox DNS blocked GitHub.
@@ -108,6 +116,7 @@
 
 - Workspace path is `/home/open/ak`.
 - Active branch is `main`.
+- Codex CLI `0.142.2` is installed for the user account.
 - The previous Ultralytics micro implementation and Colab quickstart are already committed and pushed.
 - This session has the missing default assets, AMP-check fallback, troubleshooting docs, and prior memory updates committed and pushed.
 - Local `main` matches `origin/main` before saving this Colab-run status update.

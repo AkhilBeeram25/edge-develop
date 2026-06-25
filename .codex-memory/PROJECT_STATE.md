@@ -21,6 +21,7 @@
 - Cron autosave configured to run once per minute for `/home/open/ak`.
 - Manual shell helper `savecodex` configured in `/home/open/.bashrc` when that file exists.
 - First durable checkpoint commit created.
+- Codex CLI updated to `0.142.2` on 2026-06-25 using the official `https://chatgpt.com/codex/install.sh` installer.
 
 ## Current Project Artifacts
 
