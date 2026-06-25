@@ -7,7 +7,7 @@ description: Project-specific productivity workflow for the /home/open/ak micro-
 
 ## Operating Rule
 
-Use `.codex-memory/` as the source of truth for project state. Treat Git as a checkpoint transport, not as the only memory system.
+Use `.codex-memory/` as the source of truth for project state. Treat Git as a manual checkpoint transport, not as the memory system.
 
 At task start in `/home/open/ak`, read:
 
@@ -19,7 +19,7 @@ AGENTS.md
 .codex-memory/LAST_SESSION.md
 ```
 
-Then use Git only for safety checks required by `AGENTS.md` or for publishing checkpoints. If Git is unavailable, continue from `.codex-memory` and write a snapshot before ending the turn.
+Then use Git only for safety checks, intentional local checkpoints, or explicit user-requested publishing. Never push automatically for status saving. If Git is unavailable, continue from `.codex-memory` and write a snapshot before ending the turn.
 
 ## Fast Recovery
 
@@ -48,7 +48,27 @@ When the user says “save status” or when meaningful work is done:
 2. Update `.codex-memory/PROJECT_STATE.md`, `.codex-memory/TODO.md`, and `.codex-memory/DECISIONS.md` when facts, pending work, or decisions changed.
 3. Run `scripts/snapshot_memory.py --workspace /home/open/ak --note "<short status>"` from this skill directory, or from the repo copy at `skills/micro-yolo-workflow/scripts/snapshot_memory.py`.
 4. Do not store secrets, tokens, private keys, passwords, or credential-bearing URLs.
-5. If Git is available and project rules require it, make a small checkpoint commit after the memory update. The snapshot is still the non-Git recovery path.
+5. Use Git commits only as deliberate local checkpoints. Do not run `git push` unless the user explicitly asks.
+
+## Live Local Memory
+
+For high-frequency local status persistence, use the live memory watcher instead of Git autosave:
+
+```bash
+nohup /home/open/ak/.venv/bin/python /home/open/ak/skills/micro-yolo-workflow/scripts/memory_watch.py \
+  --workspace /home/open/ak \
+  --interval 1 \
+  >/tmp/ak-memory-watch.log 2>&1 &
+```
+
+The watcher writes `.codex-memory/live/HEARTBEAT.json`, `.codex-memory/live/STATUS.md`, and `.codex-memory/live/latest_memory.md` once per second or when memory content changes. `.codex-memory/live/` is intentionally local-only and ignored by Git so it does not create commit or push churn.
+
+Check it with:
+
+```bash
+cat /home/open/ak/.codex-memory/live/STATUS.md
+cat /home/open/ak/.codex-memory/live/memory_watch.pid
+```
 
 ## Working On Code
 

@@ -2,12 +2,15 @@
 
 ## Durable Checkpoints
 
-- Use Git commits as durable checkpoints so work can be resumed after unexpected shutdown.
+- Use Git commits as deliberate local checkpoints when useful, but do not use automatic Git push or scheduled Git autosave for status persistence.
+- Pushing to Git requires an explicit user request.
 
 ## Persistent Memory
 
 - Use `.codex-memory/` as project memory for Codex state, tasks, decisions, and last-session recovery notes.
 - Do not rely only on Git for context recovery. Use the `micro-yolo-workflow` skill and `.codex-memory/snapshots/` as the non-Git recovery path.
+- Use `.codex-memory/live/` for high-frequency local heartbeat/status files. This directory is local-only and ignored by Git to avoid commit or push churn.
+- Use `skills/micro-yolo-workflow/scripts/memory_watch.py --interval 1` when second-by-second local memory updates are desired.
 
 ## Secrets
 
@@ -61,4 +64,4 @@
 
 - Install a project-specific Codex skill named `micro-yolo-workflow` at `/home/open/.codex/skills/micro-yolo-workflow` for auto-discovery.
 - Keep a portable tracked copy at `skills/micro-yolo-workflow/`.
-- The skill's job is context recovery, Colab/micro-YOLO command recall, status-saving discipline, and non-Git memory snapshot creation.
+- The skill's job is context recovery, Colab/micro-YOLO command recall, status-saving discipline, non-Git memory snapshot creation, and live local memory heartbeat support.

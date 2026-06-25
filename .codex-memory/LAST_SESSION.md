@@ -2,10 +2,23 @@
 
 ## Timestamp
 
-- 2026-06-25T17:06:52+00:00
+- 2026-06-25T17:23:10+00:00
 
 ## What Was Completed
 
+- Used the `micro-yolo-workflow` skill because the task was about non-Git memory recovery and status saving.
+- Read the required persistent memory files and `AGENTS.md` before editing.
+- Inspected the current user crontab and `/home/open/.local/bin/codex-checkpoint`.
+- Confirmed `/home/open/.local/bin/codex-checkpoint` did not run `git push`, but the crontab still scheduled automatic local Git autosave commits once per minute.
+- Removed the scheduled `/home/open/.local/bin/codex-checkpoint /home/open/ak` crontab entry so status is no longer saved through automatic Git commits.
+- Updated `AGENTS.md` to make local `.codex-memory/` status saving the automatic path and require explicit user intent for Git push.
+- Added `.codex-memory/live/` to `.gitignore` for local-only high-frequency memory files.
+- Added `skills/micro-yolo-workflow/scripts/memory_watch.py`, a one-second local memory watcher that writes:
+  - `.codex-memory/live/HEARTBEAT.json`,
+  - `.codex-memory/live/STATUS.md`,
+  - `.codex-memory/live/latest_memory.md`.
+- Updated `skills/micro-yolo-workflow/SKILL.md` with live-memory commands and the no-auto-push rule.
+- Synchronized the installed skill copy at `/home/open/.codex/skills/micro-yolo-workflow` with the updated repo skill.
 - Read the required persistent memory files before starting work.
 - Ran the requested Codex CLI installer:
   - command: `sh -c 'curl -fsSL https://chatgpt.com/codex/install.sh | CODEX_NON_INTERACTIVE=1 sh'`,
@@ -87,6 +100,12 @@
 
 ## Validation Run
 
+- `crontab -l` is now empty for the previous Git autosave line.
+- `.venv/bin/python skills/micro-yolo-workflow/scripts/memory_watch.py --workspace /home/open/ak --interval 1 --once` passed and wrote local live-memory files.
+- `git status --short --branch --ignored=matching` confirmed `.codex-memory/live/` is ignored by Git.
+- Skill validation passed for both `/home/open/ak/skills/micro-yolo-workflow` and `/home/open/.codex/skills/micro-yolo-workflow`.
+- `env PYTHONDONTWRITEBYTECODE=1 .venv/bin/python skills/micro-yolo-workflow/scripts/memory_watch.py --help` passed.
+- `env PYTHONDONTWRITEBYTECODE=1 .venv/bin/python /home/open/.codex/skills/micro-yolo-workflow/scripts/memory_watch.py --help` passed.
 - `.venv/bin/python -m compileall -q` on changed Ultralytics files passed.
 - `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python -m pytest -q ULTRALYTICS_MICRO/tests/test_micro_architecture.py` passed: 5 tests.
 - `.venv/bin/python -m pytest -q` passed: 11 existing project tests.
@@ -117,6 +136,9 @@
 - Workspace path is `/home/open/ak`.
 - Active branch is `main`.
 - Codex CLI `0.142.2` is installed for the user account.
+- Scheduled Git autosave for `/home/open/ak` is disabled.
+- There is no automatic Git push configured for status saving.
+- Live local memory support is available through `skills/micro-yolo-workflow/scripts/memory_watch.py`.
 - The previous Ultralytics micro implementation and Colab quickstart are already committed and pushed.
 - This session has the missing default assets, AMP-check fallback, troubleshooting docs, and prior memory updates committed and pushed.
 - Local `main` matches `origin/main` before saving this Colab-run status update.
@@ -130,6 +152,7 @@
 
 ## Exact Next Step
 
-- Commit and push the portable skill copy plus memory snapshots.
+- If continuing a long session, start the live memory watcher with `nohup /home/open/ak/.venv/bin/python /home/open/ak/skills/micro-yolo-workflow/scripts/memory_watch.py --workspace /home/open/ak --interval 1 >/tmp/ak-memory-watch.log 2>&1 &`.
+- Do not push Git status automatically; push only when explicitly requested.
 - Monitor the active Colab run through validation and collect `results.csv`, `args.yaml`, `weights/best.pt`, and `weights/last.pt`.
 - If the run underperforms on small crack targets, rerun with conservative tiny-object augmentation overrides: `mosaic=0.2 scale=0.25 degrees=0 perspective=0 close_mosaic=20`.
