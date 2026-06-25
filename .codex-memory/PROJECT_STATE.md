@@ -11,7 +11,7 @@
 - View recent checkpoints: `git log --oneline -5`
 - Read last session: `cat .codex-memory/LAST_SESSION.md`
 - Manual local Git checkpoint, when intentionally needed: `savecodex`
-- Start live local memory watcher: `nohup /home/open/ak/.venv/bin/python /home/open/ak/skills/micro-yolo-workflow/scripts/memory_watch.py --workspace /home/open/ak --interval 1 >/tmp/ak-memory-watch.log 2>&1 &`
+- Start live local memory watcher: `setsid -f /home/open/ak/.venv/bin/python /home/open/ak/skills/micro-yolo-workflow/scripts/memory_watch.py --workspace /home/open/ak --interval 1 >/tmp/ak-memory-watch.log 2>&1 < /dev/null`
 - Check live memory status: `cat .codex-memory/live/STATUS.md`
 - Create a tracked memory snapshot: `.venv/bin/python skills/micro-yolo-workflow/scripts/snapshot_memory.py --workspace /home/open/ak --note "<status>"`
 

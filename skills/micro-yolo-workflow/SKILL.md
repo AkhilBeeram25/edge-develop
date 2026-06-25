@@ -55,10 +55,10 @@ When the user says “save status” or when meaningful work is done:
 For high-frequency local status persistence, use the live memory watcher instead of Git autosave:
 
 ```bash
-nohup /home/open/ak/.venv/bin/python /home/open/ak/skills/micro-yolo-workflow/scripts/memory_watch.py \
+setsid -f /home/open/ak/.venv/bin/python /home/open/ak/skills/micro-yolo-workflow/scripts/memory_watch.py \
   --workspace /home/open/ak \
   --interval 1 \
-  >/tmp/ak-memory-watch.log 2>&1 &
+  >/tmp/ak-memory-watch.log 2>&1 < /dev/null
 ```
 
 The watcher writes `.codex-memory/live/HEARTBEAT.json`, `.codex-memory/live/STATUS.md`, and `.codex-memory/live/latest_memory.md` once per second or when memory content changes. `.codex-memory/live/` is intentionally local-only and ignored by Git so it does not create commit or push churn.

@@ -2,7 +2,7 @@
 
 ## Timestamp
 
-- 2026-06-25T17:23:10+00:00
+- 2026-06-25T17:26:37+00:00
 
 ## What Was Completed
 
@@ -19,6 +19,7 @@
   - `.codex-memory/live/latest_memory.md`.
 - Updated `skills/micro-yolo-workflow/SKILL.md` with live-memory commands and the no-auto-push rule.
 - Synchronized the installed skill copy at `/home/open/.codex/skills/micro-yolo-workflow` with the updated repo skill.
+- Started the live memory watcher as a detached host process with `setsid` so it continues after the command exits.
 - Read the required persistent memory files before starting work.
 - Ran the requested Codex CLI installer:
   - command: `sh -c 'curl -fsSL https://chatgpt.com/codex/install.sh | CODEX_NON_INTERACTIVE=1 sh'`,
@@ -106,6 +107,7 @@
 - Skill validation passed for both `/home/open/ak/skills/micro-yolo-workflow` and `/home/open/.codex/skills/micro-yolo-workflow`.
 - `env PYTHONDONTWRITEBYTECODE=1 .venv/bin/python skills/micro-yolo-workflow/scripts/memory_watch.py --help` passed.
 - `env PYTHONDONTWRITEBYTECODE=1 .venv/bin/python /home/open/.codex/skills/micro-yolo-workflow/scripts/memory_watch.py --help` passed.
+- Detached watcher verification passed: `.codex-memory/live/memory_watch.pid` reported PID `5115`, `pgrep` found the process, and `.codex-memory/live/STATUS.md` updated once per second.
 - `.venv/bin/python -m compileall -q` on changed Ultralytics files passed.
 - `PYTHONPATH=ULTRALYTICS_MICRO .venv/bin/python -m pytest -q ULTRALYTICS_MICRO/tests/test_micro_architecture.py` passed: 5 tests.
 - `.venv/bin/python -m pytest -q` passed: 11 existing project tests.
@@ -139,6 +141,7 @@
 - Scheduled Git autosave for `/home/open/ak` is disabled.
 - There is no automatic Git push configured for status saving.
 - Live local memory support is available through `skills/micro-yolo-workflow/scripts/memory_watch.py`.
+- At session end, the live memory watcher is running as host PID `5115` and writing `.codex-memory/live/`.
 - The previous Ultralytics micro implementation and Colab quickstart are already committed and pushed.
 - This session has the missing default assets, AMP-check fallback, troubleshooting docs, and prior memory updates committed and pushed.
 - Local `main` matches `origin/main` before saving this Colab-run status update.
@@ -152,7 +155,7 @@
 
 ## Exact Next Step
 
-- If continuing a long session, start the live memory watcher with `nohup /home/open/ak/.venv/bin/python /home/open/ak/skills/micro-yolo-workflow/scripts/memory_watch.py --workspace /home/open/ak --interval 1 >/tmp/ak-memory-watch.log 2>&1 &`.
+- Check the live memory watcher with `cat .codex-memory/live/STATUS.md` and `cat .codex-memory/live/memory_watch.pid`; if it is not running, start it with `setsid -f /home/open/ak/.venv/bin/python /home/open/ak/skills/micro-yolo-workflow/scripts/memory_watch.py --workspace /home/open/ak --interval 1 >/tmp/ak-memory-watch.log 2>&1 < /dev/null`.
 - Do not push Git status automatically; push only when explicitly requested.
 - Monitor the active Colab run through validation and collect `results.csv`, `args.yaml`, `weights/best.pt`, and `weights/last.pt`.
 - If the run underperforms on small crack targets, rerun with conservative tiny-object augmentation overrides: `mosaic=0.2 scale=0.25 degrees=0 perspective=0 close_mosaic=20`.
