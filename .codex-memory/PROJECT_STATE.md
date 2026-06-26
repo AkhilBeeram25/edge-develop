@@ -32,6 +32,7 @@
 ## Current Project Artifacts
 
 - `docs/YOLO_TECHNICAL_ROADMAP.md` contains the comprehensive technical roadmap for the proprietary YOLO-codenamed unified vision model, including micro-object architecture, multi-task heads, zero/few-shot strategy, edge inference, phased implementation, risks, and acceptance metrics.
+- `docs/PROPRIETARY_YOLO_DEVELOPMENT_PLAYBOOK.md` is the active operating workflow for AI-assisted proprietary YOLO development, benchmark gating, user-owned Git commits, explicit push-only publishing, and Rockchip/RKNN edge compatibility.
 - `src/yolo_micro/` contains the initial Phase 1 implementation scaffold:
   - P1/P2-preserving PyTorch model modules for YOLO-Micro backbone, neck, unified heads, mask prototypes, and open-vocabulary prototype scoring.
   - Tiny-object assignment, NWD/tiny-box loss helpers, and multi-task balancing modules.
@@ -105,3 +106,11 @@
   - AMP check passed after downloading `yolo26n.pt`,
   - training started and reached epoch `1/150`, batch progress around `109/809`, with GPU memory around `9.45G`.
 - `micro-yolo-workflow` skill validation passes for both the repo copy and the auto-discovered installed copy using `.venv/bin/python /home/open/.codex/skills/.system/skill-creator/scripts/quick_validate.py`.
+
+## Active Development Process
+
+- Build YOLO changes in small, reviewable units: design reason, expected metric impact, code, focused tests, smoke validation, benchmark evidence, documentation, and memory update.
+- Keep code in project/Ultralytics style without Codex-branded source comments.
+- Do not promote a model as better until it is compared against upstream YOLO, a P2 small-object baseline when available, and the current micro baseline on the same dataset/settings.
+- Track tiny-object metrics explicitly, especially 2-to-5-pixel recall, false positives per image, latency, memory, and export parity.
+- For Rockchip deployment, validate PyTorch to ONNX parity first, then RKNN conversion and board latency/parity using a pinned RKNN-Toolkit2 version and RKNN Model Zoo reference layout.

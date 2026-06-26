@@ -2,10 +2,24 @@
 
 ## Timestamp
 
-- 2026-06-26T08:53:02+00:00
+- 2026-06-26T11:33:56+00:00
 
 ## What Was Completed
 
+- User requested a more effective AI-assisted workflow for proprietary YOLO development, with changes authored under Akhilbeeram, explicit push-only publishing, Ultralytics-level quality, benchmark proof against YOLO baselines, and Rockchip/RKNN edge compatibility.
+- Confirmed current repo status before editing: `## main...origin/main [ahead 4]`.
+- Confirmed repository-local Git identity remains `Akhilbeeram <AkhilBeeram25@users.noreply.github.com>`.
+- Added `docs/PROPRIETARY_YOLO_DEVELOPMENT_PLAYBOOK.md`, an active workflow covering:
+  - operating contract for small architecture changes,
+  - Git identity and push rules,
+  - source ownership and no Codex-branded source comments,
+  - Ultralytics-style quality bar,
+  - benchmark ladder against upstream YOLO, P2 baselines, current micro baseline, and candidate models,
+  - development gates from design through RKNN edge validation,
+  - detailed task breakdown for repo workflow, baselines, dataset metrics, architecture, training, benchmark review, ONNX/RKNN, proprietary packaging, and push/release.
+- Linked the playbook from `README.md`.
+- Updated `AGENTS.md` so future sessions follow the playbook, preserve Akhilbeeram commit identity, avoid Codex-branded source banners, keep Ultralytics API compatibility, and push only on explicit user request.
+- Checked official Rockchip public references for RKNN Model Zoo and RKNN-Toolkit2 direction before writing the edge workflow; exact board/toolkit versions still need to be pinned locally before claims.
 - User requested that Git commits be authored by Akhilbeeram instead of Codex.
 - Confirmed the repository-local Git identity was `Codex Autosave <codex-autosave@localhost>`.
 - Confirmed `main` was clean and ahead of `origin/main` by three local commits.

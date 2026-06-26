@@ -20,6 +20,19 @@
 - Keep `skills/micro-yolo-workflow/scripts/memory_watch.py` running during long work sessions when one-second local recovery status is desired.
 - Run `skills/micro-yolo-workflow/scripts/snapshot_memory.py` after meaningful status updates so tracked `.codex-memory/snapshots/` remains current even if Git is unavailable.
 
+## Proprietary YOLO Development Queue
+
+- Use `docs/PROPRIETARY_YOLO_DEVELOPMENT_PLAYBOOK.md` as the task breakdown for future YOLO architecture, benchmark, and Rockchip/RKNN work.
+- When the user asks for a YOLO architecture change, start with a small design note: target problem, changed files, expected metric impact, tests, and benchmark gate.
+- Collect final artifacts from the current Colab run: `results.csv`, `args.yaml`, `weights/best.pt`, `weights/last.pt`, plots, and any validation images.
+- Add size-sliced validation reporting inside `ULTRALYTICS_MICRO/`, especially 2-to-5-pixel recall and 6-to-16-pixel recall.
+- Build a benchmark manifest script that records commit SHA, model YAML, dataset YAML, weights path, image size, batch size, epochs, seed, metrics, and hardware.
+- Run comparable baselines on the same dataset/settings: upstream YOLO, P2 small-object baseline when available, current `yolov8-micro.yaml`, and each candidate model.
+- Add ONNX export parity checks before attempting RKNN conversion.
+- Pin the target Rockchip board, RKNN-Toolkit2 version, and RKNN Model Zoo commit before making edge performance claims.
+- Create RKNN conversion and board-inference scripts only after ONNX parity passes.
+- Promote a candidate as the proprietary baseline only after reproducible accuracy and efficiency gains are documented.
+
 ## Next Steps After Restart
 
 - Run `cd /home/open/ak`.
@@ -31,3 +44,4 @@
 ## Unresolved Questions
 
 - Target class taxonomy, sensor resolution, edge hardware, dataset schema, and latency budget are not yet specified.
+- Target Rockchip board, RKNN-Toolkit2 version, and RKNN Model Zoo revision are not yet pinned.

@@ -4,6 +4,8 @@ Workspace note: this repository began as `edge-develop` / `6tops work backup`.
 
 YOLO-Micro is the first implementation scaffold for the proprietary YOLO-codenamed vision model described in `docs/YOLO_TECHNICAL_ROADMAP.md`.
 
+The active engineering workflow for turning this into a benchmarked proprietary model is documented in `docs/PROPRIETARY_YOLO_DEVELOPMENT_PLAYBOOK.md`.
+
 The current build focuses on Phase 1 foundations:
 
 - Native-resolution tiling and micro-object evaluation utilities.

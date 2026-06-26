@@ -21,8 +21,15 @@
 ## YOLO Roadmap Documentation
 
 - Store the proprietary YOLO-codenamed vision model roadmap as `docs/YOLO_TECHNICAL_ROADMAP.md`.
+- Use `docs/PROPRIETARY_YOLO_DEVELOPMENT_PLAYBOOK.md` as the active operating plan for architecture iterations, benchmark gates, Git ownership rules, and Rockchip/RKNN edge compatibility.
 - Treat native-resolution tiling, P1/P2 feature preservation, anchor-free assignment, class-agnostic objectness, and mixed-precision edge deployment as the core architecture recommendations for 2 to 5 pixel object detection.
 - Treat open-vocabulary embeddings and few-shot prototype adaptation as extensions built after tiny-object detection is stable, not as the first implementation step.
+
+## AI-Assisted Development Mode
+
+- Implement requested changes as user-owned project work: no Codex-branded source banners, no automatic pushes, and commits use the repository-local Akhilbeeram identity.
+- Do not claim model improvement without benchmark evidence against defined YOLO baselines.
+- Keep edge compatibility as a first-class gate: PyTorch, ONNX, and RKNN behavior must be compared before Rockchip deployment claims.
 
 ## Phase 1 Implementation
 
