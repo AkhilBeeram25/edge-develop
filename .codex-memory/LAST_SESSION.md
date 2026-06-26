@@ -2,10 +2,22 @@
 
 ## Timestamp
 
-- 2026-06-25T17:26:37+00:00
+- 2026-06-26T08:53:02+00:00
 
 ## What Was Completed
 
+- User requested that Git commits be authored by Akhilbeeram instead of Codex.
+- Confirmed the repository-local Git identity was `Codex Autosave <codex-autosave@localhost>`.
+- Confirmed `main` was clean and ahead of `origin/main` by three local commits.
+- Set repository-local Git identity to `Akhilbeeram <AkhilBeeram25@users.noreply.github.com>`.
+- Created local backup branch `backup/codex-author-before-rewrite` at pre-rewrite HEAD `737945c401eecaffd5a03334fdd369c1d5d8081f`.
+- Rewrote only the three unpushed commits ahead of `origin/main` so both Author and Commit fields now use `Akhilbeeram <AkhilBeeram25@users.noreply.github.com>`.
+- New local commit IDs after rewrite:
+  - `3f677c5bde19835dc5047898308a01d7d4250886` for `Checkpoint Codex CLI install`,
+  - `cc447a6dd1a3f6467c90df8f702179d8997219c2` for `Use local memory autosave instead of git autosave`,
+  - `75eb9b629e8b057cd7b4bff12606c99c4d9fc41d` for `Record live memory watcher status`.
+- Confirmed `origin/main` still contains 28 already-pushed `Codex Autosave <codex-autosave@localhost>` commits. Changing those requires an explicit published-history rewrite decision and a force push.
+- Did not push to GitHub.
 - Used the `micro-yolo-workflow` skill because the task was about non-Git memory recovery and status saving.
 - Read the required persistent memory files and `AGENTS.md` before editing.
 - Inspected the current user crontab and `/home/open/.local/bin/codex-checkpoint`.
@@ -101,6 +113,11 @@
 
 ## Validation Run
 
+- `git log --format=fuller -3` confirmed the three local commits now show Author and Commit as `Akhilbeeram <AkhilBeeram25@users.noreply.github.com>`.
+- `git config --show-origin --get user.name` reports `file:.git/config Akhilbeeram`.
+- `git config --show-origin --get user.email` reports `file:.git/config AkhilBeeram25@users.noreply.github.com`.
+- `git rev-list --count --author='Codex Autosave' origin/main` reports 28 published commits with the old author.
+- `git status --short --branch` after the rewrite reported `## main...origin/main [ahead 3]` before this memory update.
 - `crontab -l` is now empty for the previous Git autosave line.
 - `.venv/bin/python skills/micro-yolo-workflow/scripts/memory_watch.py --workspace /home/open/ak --interval 1 --once` passed and wrote local live-memory files.
 - `git status --short --branch --ignored=matching` confirmed `.codex-memory/live/` is ignored by Git.
@@ -137,6 +154,10 @@
 
 - Workspace path is `/home/open/ak`.
 - Active branch is `main`.
+- Repository-local Git identity is `Akhilbeeram <AkhilBeeram25@users.noreply.github.com>`.
+- Local `main` is ahead of `origin/main` by three rewritten commits authored by Akhilbeeram.
+- Published `origin/main` history still contains older Codex-authored commits; do not rewrite or force push that history unless the user explicitly requests it.
+- Backup branch `backup/codex-author-before-rewrite` points to the pre-rewrite local history.
 - Codex CLI `0.142.2` is installed for the user account.
 - Scheduled Git autosave for `/home/open/ak` is disabled.
 - There is no automatic Git push configured for status saving.
@@ -155,6 +176,7 @@
 
 ## Exact Next Step
 
+- Push only if explicitly requested; a normal `git push origin main` would publish the rewritten local commits with Akhilbeeram as author.
 - Check the live memory watcher with `cat .codex-memory/live/STATUS.md` and `cat .codex-memory/live/memory_watch.pid`; if it is not running, start it with `setsid -f /home/open/ak/.venv/bin/python /home/open/ak/skills/micro-yolo-workflow/scripts/memory_watch.py --workspace /home/open/ak --interval 1 >/tmp/ak-memory-watch.log 2>&1 < /dev/null`.
 - Do not push Git status automatically; push only when explicitly requested.
 - Monitor the active Colab run through validation and collect `results.csv`, `args.yaml`, `weights/best.pt`, and `weights/last.pt`.

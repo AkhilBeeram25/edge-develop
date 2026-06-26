@@ -25,6 +25,9 @@
 - Manual shell helper `savecodex` configured in `/home/open/.bashrc` when that file exists.
 - First durable checkpoint commit created.
 - Codex CLI updated to `0.142.2` on 2026-06-25 using the official `https://chatgpt.com/codex/install.sh` installer.
+- Repository-local Git identity is configured as `Akhilbeeram <AkhilBeeram25@users.noreply.github.com>` as of 2026-06-26.
+- The three local commits that were ahead of `origin/main` were rewritten on 2026-06-26 to use Akhilbeeram as both author and committer; backup branch `backup/codex-author-before-rewrite` preserves the pre-rewrite local history.
+- `origin/main` still contains 28 older published commits authored as `Codex Autosave <codex-autosave@localhost>`; changing those requires an explicit published-history rewrite and force-push decision.
 
 ## Current Project Artifacts
 

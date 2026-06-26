@@ -4,6 +4,8 @@
 
 - Use Git commits as deliberate local checkpoints when useful, but do not use automatic Git push or scheduled Git autosave for status persistence.
 - Pushing to Git requires an explicit user request.
+- Use Akhilbeeram's repository-local Git identity for future commits in `/home/open/ak`; do not use `Codex Autosave <codex-autosave@localhost>` as the author.
+- Do not rewrite already-pushed `origin/main` history or force push solely to change old authors unless the user explicitly approves that history rewrite.
 
 ## Persistent Memory
 
