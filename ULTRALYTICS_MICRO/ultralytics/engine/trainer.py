@@ -64,6 +64,14 @@ from ultralytics.utils.torch_utils import (
 )
 
 
+def _metric_keys_for_training(metrics, loss_keys: list[str]) -> list[str]:
+    """Return initial training metric columns, excluding fitness which is tracked separately."""
+    metric_keys = list(metrics.results_dict)
+    if "fitness" in metric_keys:
+        metric_keys.remove("fitness")
+    return [*metric_keys, *loss_keys]
+
+
 class BaseTrainer:
     """A base class for creating trainers.
 
@@ -365,7 +373,7 @@ class BaseTrainer:
         self.ema = ModelEMA(self.model)
         self.set_class_weights()  # compute class weights after dataloader is ready
         if RANK in {-1, 0}:
-            metric_keys = self.validator.metrics.keys + self.label_loss_items(prefix="val")
+            metric_keys = _metric_keys_for_training(self.validator.metrics, self.label_loss_items(prefix="val"))
             self.metrics = dict(zip(metric_keys, [0] * len(metric_keys)))
             if self.args.plots:
                 self.plot_training_labels()

@@ -144,9 +144,15 @@ class DetectionValidator(BaseValidator):
         ratio_pad = batch["ratio_pad"][si]
         if cls.shape[0]:
             bbox = ops.xywh2xyxy(bbox) * torch.tensor(imgsz, device=self.device)[[1, 0, 1, 0]]  # target boxes
+            native_bbox = ops.scale_boxes(imgsz, bbox.clone(), ori_shape, ratio_pad=ratio_pad)
+            wh = (native_bbox[:, 2:4] - native_bbox[:, 0:2]).clamp_(min=0)
+            target_size = torch.sqrt(wh.prod(1))
+        else:
+            target_size = torch.zeros(0, device=self.device)
         return {
             "cls": cls,
             "bboxes": bbox,
+            "target_size": target_size,
             "ori_shape": ori_shape,
             "imgsz": imgsz,
             "ratio_pad": ratio_pad,
@@ -185,6 +191,7 @@ class DetectionValidator(BaseValidator):
                     **self._process_batch(predn, pbatch),
                     "target_cls": cls,
                     "target_img": np.unique(cls),
+                    "target_size": pbatch["target_size"].cpu().numpy(),
                     "conf": np.zeros(0) if no_pred else predn["conf"].cpu().numpy(),
                     "pred_cls": np.zeros(0) if no_pred else predn["cls"].cpu().numpy(),
                     "im_name": Path(pbatch["im_file"]).name,
@@ -306,9 +313,32 @@ class DetectionValidator(BaseValidator):
                 10 IoU levels.
         """
         if batch["cls"].shape[0] == 0 or preds["cls"].shape[0] == 0:
-            return {"tp": np.zeros((preds["cls"].shape[0], self.niou), dtype=bool)}
+            return {
+                "tp": np.zeros((preds["cls"].shape[0], self.niou), dtype=bool),
+                "target_matched": np.zeros(batch["cls"].shape[0], dtype=bool),
+            }
         iou = box_iou(batch["bboxes"], preds["bboxes"])
-        return {"tp": self.match_predictions(preds["cls"], batch["cls"], iou).cpu().numpy()}
+        return {
+            "tp": self.match_predictions(preds["cls"], batch["cls"], iou).cpu().numpy(),
+            "target_matched": self._match_targets(preds, batch, iou),
+        }
+
+    def _match_targets(
+        self, preds: dict[str, torch.Tensor], batch: dict[str, Any], iou: torch.Tensor
+    ) -> np.ndarray:
+        """Return one IoU=0.5 class-aware match flag per target for size-sliced recall."""
+        target_matched = np.zeros(batch["cls"].shape[0], dtype=bool)
+        correct_class = batch["cls"][:, None] == preds["cls"]
+        matches = torch.nonzero((iou * correct_class) >= self.iouv[0], as_tuple=False)
+        if matches.shape[0]:
+            match_iou = iou[matches[:, 0], matches[:, 1]][:, None]
+            matches = torch.cat((matches, match_iou), dim=1).cpu().numpy()
+            if matches.shape[0] > 1:
+                matches = matches[matches[:, 2].argsort()[::-1]]
+                matches = matches[np.unique(matches[:, 1], return_index=True)[1]]
+                matches = matches[np.unique(matches[:, 0], return_index=True)[1]]
+            target_matched[matches[:, 0].astype(int)] = True
+        return target_matched
 
     def build_dataset(self, img_path: str, mode: str = "val", batch: int | None = None) -> torch.utils.data.Dataset:
         """Build YOLO Dataset.

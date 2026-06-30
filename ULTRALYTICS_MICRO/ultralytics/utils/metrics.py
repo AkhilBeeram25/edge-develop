@@ -46,6 +46,8 @@ CITYSCAPES_WEIGHT = np.array(
         1.0507,
     ]
 )
+MICRO_SIZE_BINS = {"2_to_5_px": (2.0, 6.0), "6_to_16_px": (6.0, 17.0)}
+MICRO_SIZE_RECALL_KEYS = [f"metrics/recall_{name}(B)" for name in MICRO_SIZE_BINS]
 
 
 def bbox_ioa(box1: np.ndarray, box2: np.ndarray, iou: bool = False, eps: float = 1e-7) -> np.ndarray:
@@ -1123,7 +1125,9 @@ class DetMetrics(SimpleClass, DataExportMixin):
         self.names = names
         self.box = Metric()
         self.speed = {"preprocess": 0.0, "inference": 0.0, "loss": 0.0, "postprocess": 0.0}
-        self.stats = dict(tp=[], conf=[], pred_cls=[], target_cls=[], target_img=[])
+        self.stats = dict(tp=[], conf=[], pred_cls=[], target_cls=[], target_img=[], target_size=[], target_matched=[])
+        self.size_recalls = {name: 0.0 for name in MICRO_SIZE_BINS}
+        self.size_targets = {name: 0 for name in MICRO_SIZE_BINS}
         self.nt_per_class = None
         self.nt_per_image = None
 
@@ -1135,7 +1139,14 @@ class DetMetrics(SimpleClass, DataExportMixin):
                 keys in self.stats.
         """
         for k in self.stats.keys():
-            self.stats[k].append(stat[k])
+            if k in stat:
+                self.stats[k].append(stat[k])
+            elif k == "target_size":
+                self.stats[k].append(np.zeros(stat["target_cls"].shape[0], dtype=np.float32))
+            elif k == "target_matched":
+                self.stats[k].append(np.zeros(stat["target_cls"].shape[0], dtype=bool))
+            else:
+                self.stats[k].append(stat[k])
         self.box.update_image_metrics(stat["tp"], stat["target_cls"], stat["pred_cls"], stat["im_name"])
 
     def process(self, save_dir: Path = Path("."), plot: bool = False, on_plot=None) -> dict[str, np.ndarray]:
@@ -1165,9 +1176,21 @@ class DetMetrics(SimpleClass, DataExportMixin):
         )[2:]
         self.box.nc = len(self.names)
         self.box.update(results)
+        self.process_size_recalls(stats)
         self.nt_per_class = np.bincount(stats["target_cls"].astype(int), minlength=len(self.names))
         self.nt_per_image = np.bincount(stats["target_img"].astype(int), minlength=len(self.names))
         return stats
+
+    def process_size_recalls(self, stats: dict[str, np.ndarray]) -> None:
+        """Compute target-size recall slices from native-pixel box diameters."""
+        target_size = stats.get("target_size", np.zeros(0))
+        target_matched = stats.get("target_matched", np.zeros(0, dtype=bool)).astype(bool)
+        for name, (min_size, max_size) in MICRO_SIZE_BINS.items():
+            size_mask = (target_size >= min_size) & (target_size < max_size)
+            target_count = int(size_mask.sum())
+            matched_count = int(target_matched[size_mask].sum()) if target_count else 0
+            self.size_targets[name] = target_count
+            self.size_recalls[name] = matched_count / target_count if target_count else 0.0
 
     def clear_stats(self):
         """Clear the stored statistics."""
@@ -1209,8 +1232,11 @@ class DetMetrics(SimpleClass, DataExportMixin):
     @property
     def results_dict(self) -> dict[str, float]:
         """Return dictionary of computed performance metrics and statistics."""
-        keys = [*self.keys, "fitness"]
-        values = ((float(x) if hasattr(x, "item") else x) for x in ([*self.mean_results(), self.fitness]))
+        keys = [*self.keys, *MICRO_SIZE_RECALL_KEYS, "fitness"]
+        values = (
+            (float(x) if hasattr(x, "item") else x)
+            for x in ([*self.mean_results(), *self.size_recalls.values(), self.fitness])
+        )
         return dict(zip(keys, values))
 
     @property
